@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const BOT_TOKEN = '7608630277:AAFG-EDXeD7XcXLKg351RKC78mDFGc_cw1E';
     
     if (!BOT_TOKEN) {
-      return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'Bot token configured incorrectly' }, { status: 500 });
     }
 
     // PRODUCTION IMPLEMENTATION:
