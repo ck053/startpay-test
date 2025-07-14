@@ -1,4 +1,4 @@
-# Telegram Mini App With Stars Payments
+# Telegram Mini App With Stars Payments (Repo for personal testing)
 
 A complete full-stack example of a modern Telegram Mini App for selling digital products using Telegram Stars payments. Built with Next.js 15, TypeScript, Tailwind CSS, and Telegram Bot API, this app includes secure invoice generation, purchase history, secret content access after purchase, and refund processing via a Python companion bot. Ideal for Web3 developers, Telegram bot creators, and digital entrepreneurs looking to monetize through Telegram's payment ecosystem.
 
