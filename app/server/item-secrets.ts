@@ -3,10 +3,10 @@
 
 // Map of item IDs to their secret codes
 export const ITEM_SECRETS: Record<string, string> = {
-  'ice_cream': 'FROZEN2025',
-  'cookie': 'SWEET2025',
-  'hamburger': 'BURGER2025',
-  'fries': 'FRIES2025'
+  'one_coin': 'onecoin2025',
+  'five_coins': 'fivecoin2025',
+  'ten_coins': 'tencoin2025',
+  'treasure': 'treasure2025'
 };
 
 // Function to get a secret code for an item
