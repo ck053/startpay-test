@@ -10,32 +10,32 @@ export interface Item {
 // Items data - shared between frontend and backend
 export const ITEMS: Item[] = [
   {
-    id: 'ice_cream',
-    name: 'Ice Cream 🍦',
-    description: 'A delicious virtual ice cream',
+    id: 'one_coin',
+    name: 'One Coin 🪙',
+    description: 'One in-game coin',
     price: 1,
-    icon: '🍦'
+    icon: ' 🪙 '
   },
   {
-    id: 'cookie',
-    name: 'Cookie 🍪',
-    description: 'A sweet virtual cookie',
-    price: 3,
-    icon: '🍪'
-  },
-  {
-    id: 'hamburger',
-    name: 'Hamburger 🍔',
-    description: 'A tasty virtual hamburger',
-    price: 5,
-    icon: '🍔'
-  },
-  {
-    id: 'fries',
-    name: 'Fries 🍟',
-    description: 'A tasty virtual Fries',
+    id: 'five_coins',
+    name: 'Five Coins 🪙',
+    description: 'Five in_game coins',
     price: 4,
-    icon: '🍟'
+    icon: '🪙'
+  },
+  {
+    id: 'ten_coins',
+    name: 'Ten Coins 🪙',
+    description: 'Ten in-game coins',
+    price: 7,
+    icon: '🪙'
+  },
+  {
+    id: 'treasure',
+    name: 'Treasure 🎁',
+    description: 'A mystery box',
+    price: 5,
+    icon: '🎁'
   }
 ];
 
