@@ -20,10 +20,10 @@ export async function POST(req: NextRequest) {
     const { name: title, description, price } = item;
 
     // Get the BOT_TOKEN from environment variables
-    const BOT_TOKEN = '7608630277:AAFG-EDXeD7XcXLKg351RKC78mDFGc_cw1E';
+    const BOT_TOKEN = process.env.BOT_TOKEN;
     
     if (!BOT_TOKEN) {
-      return NextResponse.json({ error: 'Bot token configured incorrectly' }, { status: 500 });
+      return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
     }
 
     // PRODUCTION IMPLEMENTATION:
