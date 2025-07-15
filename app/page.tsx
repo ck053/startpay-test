@@ -252,7 +252,7 @@ export default function Home() {
         />
       )}
       
-      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store 1.01</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store 1.02</h1>
       
       <ItemsList 
         items={ITEMS}

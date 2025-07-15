@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!paymentUpdateResponse.ok) {
+      const errorText = await paymentUpdateResponse.text();
       console.error('Failed to notify Socket.io server');
       return NextResponse.json({ error: 'Failed to connect the database' }, { status: 500 })
     }
