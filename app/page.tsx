@@ -22,6 +22,7 @@ export default function Home() {
     type: 'purchase' | 'refund' | null;
     purchase?: CurrentPurchaseWithSecret;
   }>({ type: null });
+  const [username, setUsername] = useState<string>('')
 
   useEffect(() => {
     // Import TWA SDK dynamically to avoid SSR issues
@@ -43,6 +44,9 @@ export default function Home() {
             // Access user data directly from the WebApp object
             const user = WebApp.initDataUnsafe.user;
             setUserId(user.id?.toString() || '');
+            const userName = user.first_name || '';
+            const userLastName = user.last_name || '';
+            setUsername(`${userName}${userLastName ? ' ' + userLastName : ''}`);
           } else {
             setError('No user data available from Telegram');
             setIsLoading(false);
