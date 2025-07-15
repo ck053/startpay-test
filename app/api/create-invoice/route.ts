@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to connect the database' }, { status: 500 })
     }
 
-    const paymentUpdateResponse = await fetch('http://your-socket-server.com/payment-update', {
+    const paymentUpdateResponse = await fetch('https://a41b13ff0c3d.ngrok-free.app', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
