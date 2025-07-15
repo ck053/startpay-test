@@ -255,7 +255,7 @@ export default function Home() {
           onClose={handleCloseModal}
         />
       )}
-      
+      <h1>Hi {username}!</h1>
       <h1 className="text-2xl font-bold mb-6 text-center">Digital Store 1.05</h1>
       
       <ItemsList 
