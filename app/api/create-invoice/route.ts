@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     
     const invoiceLink = data.result;
     
-    const paymentUpdateResponse = await fetch('https://a41b13ff0c3d.ngrok-free.app', {
+    const paymentUpdateResponse = await fetch('https://a41b13ff0c3d.ngrok-free.app/payment-update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -91,7 +91,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (!paymentUpdateResponse.ok) {
-      const errorText = await paymentUpdateResponse.text();
       console.error('Failed to notify Socket.io server');
       return NextResponse.json({ error: 'Failed to connect the database' }, { status: 500 })
     }
