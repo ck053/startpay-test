@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getItemById } from '@/app/data/items';
+import { v4 as uuidv4 } from 'uuid';
+
+const requestId = uuidv4();
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,6 +75,25 @@ export async function POST(req: NextRequest) {
     }
     
     const invoiceLink = data.result;
+
+    const paymentUpdateResponse = await fetch('http://your-socket-server.com/payment-update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        description,
+        payload: itemId, // In production, use a JSON string with a unique request ID
+        provider_token: '', // Empty for Telegram Stars payments
+        currency: 'XTR',    // Telegram Stars currency code
+        prices: [{ label: title, amount: price }],
+        start_parameter: "start_parameter" // Required for some clients
+      })
+    });
+
+    if (!paymentUpdateResponse.ok) {
+      console.error('Failed to notify Socket.io server');
+      return NextResponse.json({ error: 'Failed to connect the database' }, { status: 500 })
+    }
 
     // We don't store the purchase yet - that will happen after successful payment
     // We'll return the invoice link to the frontend
