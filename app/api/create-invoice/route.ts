@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export async function POST(req: NextRequest) {
   try {
     const uniqueId = uuidv4();
+    console.log('Generated unique ID:', uniqueId);
     const body = await req.json();
     const { userId, itemId } = body;
 
