@@ -79,10 +79,9 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uniqueId,
         title,
         description,
-        payload: itemId, // In production, use a JSON string with a unique request ID
+        payload: uniqueId, // In production, use a JSON string with a unique request ID
         provider_token: '', // Empty for Telegram Stars payments
         currency: 'XTR',    // Telegram Stars currency code
         prices: [{ label: title, amount: price }],
