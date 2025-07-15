@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getItemById } from '@/app/data/items';
 import { v4 as uuidv4 } from 'uuid';
 
-const requestId = uuidv4();
-
 export async function POST(req: NextRequest) {
   try {
+    const uniqueId = uuidv4();
     const body = await req.json();
     const { userId, itemId } = body;
 
@@ -80,6 +79,7 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        uniqueId,
         title,
         description,
         payload: itemId, // In production, use a JSON string with a unique request ID
