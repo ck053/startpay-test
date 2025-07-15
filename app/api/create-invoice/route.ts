@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     
     const invoiceLink = data.result;
     
-    const paymentUpdateResponse = await fetch('http://your-socket-server.com/payment-update', {
+    const paymentUpdateResponse = await fetch('https://a41b13ff0c3d.ngrok-free.app', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
