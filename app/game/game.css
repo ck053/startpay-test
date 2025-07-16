@@ -4,6 +4,9 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #__next { /* This is the default wrapper for Next.js pages */
@@ -15,7 +18,7 @@ html, body {
 .app-container {
   width: 100vw; /* Use viewport width */
   height: 100vh; /* Use viewport height */
-  max-width: 100%; /* Prevent overflow */
+  max-width: calc(100vh* 16 / 9); /* Prevent overflow */
   max-height: calc(100vw * 9 / 16); /* Maintain 16:9 ratio */
   background-color: black; /* Optional: background color */
   position: relative;
@@ -23,14 +26,6 @@ html, body {
   display: flex; /* Center content */
   justify-content: center;
   align-items: center;
-}
-
-.app-content {
-  width: 100%; /* or a specific width */
-  height: 100%; /* or a specific height */
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
 .gameboard {
@@ -42,10 +37,12 @@ html, body {
 .playerhand {
   display: flex; /* Use flexbox to arrange tiles */
   flex-direction: row; /* Arrange tiles left to right */
-  width: 100%; /* Full width */
+  width: 70%; /* Full width */
   aspect-ratio: 21/2;
   position: absolute; /* Position at the bottom */
   bottom: 0; /* Align to the bottom of the screen */
+  left: 50%;
+  transform: translateX(-50%);
   background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */
   border: 1px solid #000;
   overflow-x: auto; 
