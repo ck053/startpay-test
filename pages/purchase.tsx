@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ITEMS, Item } from '@/app/data/items';
 import { Purchase, CurrentPurchaseWithSecret } from '@/app/types';
-
+import '@/app/globals.css';
 // Import components
 import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';

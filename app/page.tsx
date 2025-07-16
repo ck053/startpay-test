@@ -60,6 +60,7 @@ export default function Home() {
         }
 
         setInitialized(true);
+        setIsLoading(false);
       } catch (e) {
         console.error('Failed to initialize Telegram Web App:', e);
         setError('Failed to initialize Telegram Web App');
