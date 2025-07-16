@@ -22,7 +22,7 @@ export default function Board() {
         // Generate tiles for opponent (14 tiles)
         const generatedOpponentTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('Regular/Back.png')`, // Adjust the image path as needed
+            backgroundImage: `url('Regular/0m.png')`, // Adjust the image path as needed
         }));
 
         // Update state with new tiles
@@ -55,6 +55,12 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
+            <button 
+                onClick={updateHands} 
+                className="refresh-button"
+            >
+                Refresh Tiles
+            </button>
         </div>
     );
 }

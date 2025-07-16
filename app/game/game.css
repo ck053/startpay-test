@@ -40,6 +40,8 @@ html, body {
 }
 
 .opponent_hand_middle {
+  display: flex; /* Use flexbox to arrange tiles */
+  flex-direction: row; /* Arrange tiles left to right */
   width: 80%; /* Set width to 80% */
   aspect-ratio: 21 / 2; /* Set the aspect ratio */
   position: absolute; /* Position it absolutely */
