@@ -11,16 +11,27 @@ html, body {
   flex-direction: column; /* Stack children vertically */
 }
 
+.app-container {
+  width: 100vw; /* Full viewport width */
+  height: calc(100vw / 2.75); /* Height based on the desired aspect ratio */
+  max-height: 100vh; /* Prevent it from exceeding the viewport height */
+  background-color: #f0f0f0; /* Example background color */
+  display: flex; /* Use flexbox for layout */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+}
+
 .gameboard {
   flex: 1; /* Allow the gameboard to fill the remaining space */
   display: flex; /* Use flex for tiles */
   flex-wrap: wrap; /* Allow wrapping of tiles */
-  border: 10px solid black;
 }
 
 .tile {
-  flex: 1 0 20%; /* Each tile takes 20% of the width */
-  height: 20%; /* Each tile takes 20% of the height */
-  background-color: lightblue;
-  border: 1px solid #000;
+  flex: 1 0;
+  height: 20%;
+  aspect-ratio: 4 / 3;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
