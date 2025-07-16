@@ -1,9 +1,19 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 .gameboard {
   width: 100%;
   height: 100%;
+  border: 10px solid black;
 }
 
 .tile {
-  width:5%;
-  height:10%;
+  flex: 1 0 20%; /* Each tile takes 20% of the width */
+  height: 20%; /* Each tile takes 20% of the height */
+  background-color: lightblue;
+  border: 1px solid #000;
 }
