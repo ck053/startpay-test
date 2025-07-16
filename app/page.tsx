@@ -1,30 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ITEMS, Item } from '@/app/data/items';
-import { Purchase, CurrentPurchaseWithSecret } from '@/app/types';
 
 // Import components
 import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';
-import ItemsList from '@/app/components/ItemsList';
-import PurchaseHistory from '@/app/components/PurchaseHistory';
-import PurchaseSuccessModal from '@/app/components/PurchaseSuccessModal';
-import RefundInstructionsModal from '@/app/components/RefundInstructionsModal';
 import StartButton from './components/StartButton';
 import ShowBalance from './components/ShowBalance';
 
 export default function Home() {
   const [initialized, setInitialized] = useState(false);
-  const [userId, setUserId] = useState<string>('');
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [modalState, setModalState] = useState<{
-    type: 'purchase' | 'refund' | null;
-    purchase?: CurrentPurchaseWithSecret;
-  }>({ type: null });
-  const [username, setUsername] = useState<string>('')
+  const [username, setUsername] = useState<string>('');
+  const [userid, setUserId] = useState<string>('');
 
   useEffect(() => {
     // Import TWA SDK dynamically to avoid SSR issues
@@ -75,11 +64,6 @@ export default function Home() {
   // Handle retry on error
   const handleRetry = () => {
     window.location.reload();
-  };
-
-  // Close modals
-  const handleCloseModal = () => {
-    setModalState({ type: null });
   };
 
   // Loading state
