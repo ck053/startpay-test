@@ -35,7 +35,7 @@ html, body {
   position: absolute; /* Position at the bottom */
   bottom: 0; /* Align to the bottom of the screen */
   background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */
-  border-color: 1px solid #000; /* Optional: Border for visibility */
+  border: 1px solid #000; /* Optional: Border for visibility */
   overflow-x: auto; 
 }
 
@@ -47,7 +47,7 @@ html, body {
   left: 50%; /* Center horizontally */
   transform: translateX(-50%); /* Adjust position to truly center */
   background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */
-  border-color: 1px solid #000; /* Optional: Border for visibility */
+  border: 1px solid #000; /* Optional: Border for visibility */
 }
 
 
