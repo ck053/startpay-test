@@ -40,6 +40,13 @@ export default function Board() {
         }
     }, []);
 
+    useEffect(() => {
+        if (playerHandRef.current) {
+            const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
+            document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Update CSS variable
+        }
+    }, [playerTiles]);
+
     return (
         <div className="gameboard">
             <div className='playerhand'>
