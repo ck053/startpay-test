@@ -52,6 +52,24 @@ html, body {
   border: 1px solid #000; /* Optional: Border for visibility */
 }
 
+.opponent_hand_left, .opponent_hand_right {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: row; /* Arrange tiles left to right */
+  width: calc(100% - var(--playerhand-height) - 20px); /* Full width minus player hand height and some separation */
+  aspect-ratio: 2/21; /* Maintain aspect ratio */
+  position: absolute; /* Position absolutely */
+  background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color */
+  border: 1px solid #000; /* Optional: Border for visibility */
+}
+
+.opponent_hand_left {
+  left: 0; /* Stick to the left side */
+}
+
+.opponent_hand_right {
+  right: 0; /* Stick to the right side */
+}
+
 
 .tile {
   flex: 0 0 auto;

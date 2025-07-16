@@ -10,31 +10,27 @@ export default function Board() {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
-    const [imageIndex, setImageIndex] = useState(10); // Start from image 10
 
     // Function to update hands
     const updateHands = () => {
         // Generate tiles for player (14 tiles)
         const generatedPlayerTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('Regular/${imageIndex + index}.png')`, // Use current index
+            backgroundImage: `url('Regular/0m.png')`, // Adjust the image path as needed
         }));
 
         // Generate tiles for opponent (14 tiles)
         const generatedOpponentTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('Regular/${imageIndex + index}.png')`, // Use current index
+            backgroundImage: `url('Regular/0m.png')`, // Adjust the image path as needed
         }));
 
         // Update state with new tiles
         setPlayerTiles(generatedPlayerTiles);
         setOpponentTiles(generatedOpponentTiles);
-
-        // Increment the image index for the next refresh
-        setImageIndex(prevIndex => prevIndex + 14); // Increase by 14 for the next set
     };
 
-    // Call updateHands on component mount
+    // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
     }, []);
@@ -59,12 +55,8 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <button 
-                onClick={updateHands} 
-                className="refresh-button"
-            >
-                Refresh Tiles
-            </button>
+            <div className='opponent_hand_left'></div>
+            <div className='opponent_hand_right'></div>
         </div>
     );
 }
