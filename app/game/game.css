@@ -12,13 +12,19 @@ html, body {
 }
 
 .app-container {
-  width: 100vw; /* Full viewport width */
-  height: calc(100vw / 2.75); /* Height based on the desired aspect ratio */
-  max-height: 100vh; /* Prevent it from exceeding the viewport height */
-  background-color: #f0f0f0; /* Example background color */
-  display: flex; /* Use flexbox for layout */
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
+  width: 100%; /* or a specific width */
+  height: 0;
+  padding-bottom: 56.25%; /* 9/16 = 0.5625 */
+  position: relative;
+  overflow: hidden;
+}
+
+.app-container > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .gameboard {
@@ -55,7 +61,7 @@ html, body {
 .opponent_hand_left, .opponent_hand_right {
   display: flex; /* Use flexbox for layout */
   flex-direction: row; /* Arrange tiles left to right */
-  width: calc(100% - var(--playerhand-height) - 3px); /* Full width minus player hand height and some separation */
+  height: calc(100% - var(--playerhand-height) - 3px); /* Full width minus player hand height and some separation */
   aspect-ratio: 2/21; /* Maintain aspect ratio */
   position: absolute; /* Position absolutely */
   background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color */

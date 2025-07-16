@@ -5,8 +5,9 @@ interface Tile {
     id: number;
     backgroundImage: string;
 }
-
+var x: number;
 export default function Board() {
+    x = 0;
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
@@ -14,6 +15,7 @@ export default function Board() {
 
     // Function to update hands
     const updateHands = () => {
+        x += 1;
         // Generate tiles for player (14 tiles)
         const generatedPlayerTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
             id: index + 1,
@@ -42,6 +44,7 @@ export default function Board() {
             if (playerHandRef.current) {
                 const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
                 document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Set CSS variable
+                console.log(`Setting player hand height to: ${playerHandHeight}px`); // Debugging log
             }
         };
 
@@ -54,6 +57,7 @@ export default function Board() {
         };
     }, [playerTiles]);
     return (
+        <div class="app-container">
         <div className="gameboard">
             <div className='playerhand'>
                 {playerTiles.map(tile => (
@@ -76,6 +80,7 @@ export default function Board() {
             <div className='opponent_hand_left'></div>
             <div className='opponent_hand_right'></div>
             <div className='button' onClick={updateHands}></div>
+        </div>
         </div>
     );
 }
