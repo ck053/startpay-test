@@ -69,6 +69,7 @@ export default function Board() {
             </div>
             <div className='opponent_hand_left'></div>
             <div className='opponent_hand_right'></div>
+            <div className='button' onClick={updateHands}></div>
         </div>
     );
 }

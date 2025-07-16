@@ -78,3 +78,18 @@ html, body {
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.button {
+  width: 20px;
+  height: 10px;
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  padding: 10px 20px;
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Change cursor to pointer */
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
