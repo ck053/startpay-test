@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     
     const invoiceLink = data.result;
     
-    const paymentUpdateResponse = await fetch('https://a41b13ff0c3d.ngrok-free.app/payment-update', {
+    /* const paymentUpdateResponse = await fetch('https://a41b13ff0c3d.ngrok-free.app/payment-update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     if (!paymentUpdateResponse.ok) {
       console.error('Failed to notify Socket.io server');
       return NextResponse.json({ error: 'Failed to connect the database' }, { status: 500 })
-    }
+    } */
 
     // We don't store the purchase yet - that will happen after successful payment
     // We'll return the invoice link to the frontend
