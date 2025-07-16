@@ -2,14 +2,21 @@
 
 import { useEffect, useState } from 'react';
 
+// Define the type for a tile
+interface Tile {
+    id: number;
+    backgroundImage: string;
+}
+
 export default function Hands() {
-    const [tiles, setTiles] = useState([]);
+    // Specify the type of tiles state as Tile[]
+    const [tiles, setTiles] = useState<Tile[]>([]);
 
     useEffect(() => {
         // Generate an array of 13 tiles
-        const generatedTiles = Array.from({ length: 13 }, (_, index) => ({
+        const generatedTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('Regular/0m.png')`, // Adjust the image path as needed
+            backgroundImage: `url('@/public/Regular/0m.png')`, // Adjust the image path as needed
         }));
 
         setTiles(generatedTiles);
