@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState , useRef} from 'react';
 
 // Define the type for a tile
 interface Tile {
@@ -10,6 +10,7 @@ export default function Board() {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
+    const playerHandRef = useRef<HTMLDivElement>(null); // Create a ref for player hand
 
     // Function to update hands
     const updateHands = () => {
@@ -33,6 +34,10 @@ export default function Board() {
     // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
+        if (playerHandRef.current) {
+            const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
+            document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Set CSS variable
+        }
     }, []);
 
     return (
