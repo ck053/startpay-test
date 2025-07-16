@@ -11,12 +11,12 @@ export default function Board() {
                 ></div>
                 <div 
                     id="tile2" 
-                    style={{ backgroundImage: "url('Regular/1m.png')" }} 
+                    style={{ backgroundImage: "url('Regular/0m.png')" }} 
                     className="tile"
                 ></div>
                 <div 
                     id="tile3" 
-                    style={{ backgroundImage: "url('Regular/2m.png')" }} 
+                    style={{ backgroundImage: "url('Regular/0m.png')" }} 
                     className="tile"
                 ></div>
             </div>
