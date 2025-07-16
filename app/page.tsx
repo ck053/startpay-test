@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 // Import components
 import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';
-import StartButton from './components/StartButton';
-import ShowBalance from './components/ShowBalance';
+import StartButton from '@/app/components/StartButton';
+import ShowBalance from '@/app/components/ShowBalance';
 
 export default function Home() {
   const [initialized, setInitialized] = useState(false);

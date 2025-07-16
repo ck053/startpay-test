@@ -1,15 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { SetBoard } from '@/app/game/SetBoard.js';
+import Board from '@/app/game/components/Board';
 import '@/app/game/game.css';
 
 const game = () => {
-    useEffect(() => {
-        SetBoard();
-    }, []);
-
-    return null;
+    return <Board />;
 };
 
 export default game;
