@@ -34,19 +34,25 @@ export default function Board() {
     // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
-        if (playerHandRef.current) {
-            const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
-            document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Set CSS variable
-        }
     }, []);
 
+    // Update playerhand height whenever tiles are updated
     useEffect(() => {
-        if (playerHandRef.current) {
-            const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
-            document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Update CSS variable
-        }
-    }, [playerTiles]);
+        const setPlayerHandHeight = () => {
+            if (playerHandRef.current) {
+                const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
+                document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Set CSS variable
+            }
+        };
 
+        // Use setTimeout to ensure the height is set after rendering
+        setTimeout(setPlayerHandHeight, 0); // Delay to wait for render
+
+        // Optionally, you can also call it again after updating tiles
+        return () => {
+            setPlayerHandHeight(); // Cleanup to avoid memory leaks
+        };
+    }, [playerTiles]);
     return (
         <div className="gameboard">
             <div className='playerhand'>
