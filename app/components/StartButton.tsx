@@ -12,4 +12,3 @@ export default function StartButton() {
         </Link>
     </div>)
 }
-export default StartButton;
