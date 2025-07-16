@@ -12,6 +12,7 @@ import PurchaseHistory from '@/app/components/PurchaseHistory';
 import PurchaseSuccessModal from '@/app/components/PurchaseSuccessModal';
 import RefundInstructionsModal from '@/app/components/RefundInstructionsModal';
 import StartButton from './components/StartButton';
+import ShowBalance from './components/ShowBalance';
 
 export default function Home() {
   const [initialized, setInitialized] = useState(false);
@@ -256,9 +257,10 @@ export default function Home() {
           onClose={handleCloseModal}
         />
       )}
+      <ShowBalance />
       <h1>Hi {username}!</h1>
       <StartButton />
-      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store 1.0</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store</h1>
       
       <ItemsList 
         items={ITEMS}
