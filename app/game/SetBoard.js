@@ -73,7 +73,7 @@ export const SetBoard = (gamedata, previousplayer, nextplayer, playpos, player) 
     centreboard.classList.add("centreboard");
     centreboard.id = "centreboard";
     gameboard.appendChild(centreboard);
-
+    /*
     // Create point indicators
     const pointleft = document.createElement("div");
     pointleft.id = "point-left";
@@ -94,7 +94,7 @@ export const SetBoard = (gamedata, previousplayer, nextplayer, playpos, player) 
     const doraindicate = document.createElement('div');
     doraindicate.id = "doraind";
     centreboard.appendChild(doraindicate);
-
+    */
     // Create round info area
     const roundinfo = document.createElement('div');
     roundinfo.id = "roundinfo";
@@ -105,10 +105,10 @@ export const SetBoard = (gamedata, previousplayer, nextplayer, playpos, player) 
     buttonarea.classList.add("button-area");
     buttonarea.id = "button-area";
     gameboard.appendChild(buttonarea);
-
+    /*
     // Update player hands (ensure these functions are defined)
     player[(playpos + 1) % 3][1]['hand'].pop();
     player[(playpos + 2) % 3][1]['hand'].pop();
     updateleftplayerhand((playpos + 1) % 3);
-    updaterightplayerhand((playpos + 1) % 3);
+    updaterightplayerhand((playpos + 1) % 3); */
 }
