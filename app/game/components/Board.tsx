@@ -57,7 +57,7 @@ export default function Board() {
         };
     }, [playerTiles]);
     return (
-        <div class="app-container">
+        <div className="app-container">
         <div className="gameboard">
             <div className='playerhand'>
                 {playerTiles.map(tile => (
