@@ -27,9 +27,20 @@ html, body {
   flex-wrap: wrap; /* Allow wrapping of tiles */
 }
 
+.playerhand {
+  display: flex; /* Use flexbox to arrange tiles */
+  flex-direction: row; /* Arrange tiles left to right */
+  width: 100%; /* Full width */
+  height: 20%; /* 20% of the viewport height */
+  position: absolute; /* Position at the bottom */
+  bottom: 0; /* Align to the bottom of the screen */
+  background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */
+  border-top: 1px solid #000; /* Optional: Border for visibility */
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
+}
+
 .tile {
-  flex: 1 0;
-  height: 20%;
+  flex: 0 0 auto;
   aspect-ratio: 4 / 3;
   background-size: contain;
   background-repeat: no-repeat;
