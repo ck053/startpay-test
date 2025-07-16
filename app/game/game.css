@@ -31,7 +31,7 @@ html, body {
   display: flex; /* Use flexbox to arrange tiles */
   flex-direction: row; /* Arrange tiles left to right */
   width: 100%; /* Full width */
-  height: 20%; /* 20% of the viewport height */
+  aspect-ratio: 21/2;
   position: absolute; /* Position at the bottom */
   bottom: 0; /* Align to the bottom of the screen */
   background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */

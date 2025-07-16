@@ -13,10 +13,13 @@ export default function Hands() {
     const [tiles, setTiles] = useState<Tile[]>([]);
 
     useEffect(() => {
+        // Clear existing tiles
+        setTiles([]);
+
         // Generate an array of 13 tiles
         const generatedTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('@/public/Regular/0m.png')`, // Adjust the image path as needed
+            backgroundImage: `url('Regular/0m.png')`, // Corrected image path
         }));
 
         setTiles(generatedTiles);
