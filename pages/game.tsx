@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { SetBoard } from '@/app/game/SetBoard.js';
 import '@/app/game/game.css';
 
