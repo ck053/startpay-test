@@ -258,7 +258,7 @@ export default function Home() {
       )}
       <h1>Hi {username}!</h1>
       <StartButton />
-      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store 1.05</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store</h1>
       
       <ItemsList 
         items={ITEMS}
