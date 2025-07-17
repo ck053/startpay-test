@@ -138,7 +138,7 @@ export default function Home() {
           Go to Game Page
         </button>
       </div>
-      <div id='game' className='page'>
+      <div id='game' className='page' style={{display: 'none'}}>
         <Board />
       </div>
     </div>
