@@ -15,90 +15,144 @@ html, body {
   flex-direction: column; /* Stack children vertically */
 }
 
-.app-container {
-  width: 100vw; /* Use viewport width */
-  height: 100vh; /* Use viewport height */
-  max-width: calc(100vh* 16 / 9); /* Prevent overflow */
-  max-height: calc(100vw * 9 / 16); /* Maintain 16:9 ratio */
-  background-color: black; /* Optional: background color */
-  position: relative;
-  overflow: hidden; /* Hide overflow */
-  display: flex; /* Center content */
-  justify-content: center;
-  align-items: center;
-}
 
 .gameboard {
+  width: 100vw; /* Use viewport width */
+  height: 100vh; /* Use viewport height */
   flex: 1; /* Allow the gameboard to fill the remaining space */
   display: flex; /* Use flex for tiles */
   flex-wrap: wrap; /* Allow wrapping of tiles */
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
 .playerhand {
-  display: flex; /* Use flexbox to arrange tiles */
-  flex-direction: row; /* Arrange tiles left to right */
-  width: 70%; /* Full width */
+  width: 70%;
+  max-height: 14.9vh;
+  aspect-ratio: 21 / 2;
+  border: 1px solid orange;
+  position: absolute;
+  bottom: 2%;
+  left: 15%;
+  display: flex;
+  flex-direction: row;
+}
+
+.playerexposed {
+  width: 70%;
+  max-height: 14.9vh;
+  aspect-ratio: 21 / 2;
+  border: 1px solid orange;
+  position: absolute;
+  bottom: 2%;
+  right: 2%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.opphand {
+  width: 60vh;
   aspect-ratio: 21/2;
-  position: absolute; /* Position at the bottom */
-  bottom: 0; /* Align to the bottom of the screen */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */
-  border: 1px solid #000;
-  overflow-x: auto; 
+  border: 1px solid orange;
+  position: absolute;
+  top: 2%;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
-.opponent_hand_middle {
-  display: flex; /* Use flexbox to arrange tiles */
-  flex-direction: row; /* Arrange tiles left to right */
-  width: 80%; /* Set width to 80% */
-  aspect-ratio: 21 / 2; /* Set the aspect ratio */
-  position: absolute; /* Position it absolutely */
-  top: 0; /* Align to the top of the screen */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Adjust position to truly center */
-  background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color with some transparency */
-  border: 1px solid #000; /* Optional: Border for visibility */
+.lefthand, .righthand{
+  height: 60vh;
+  aspect-ratio: 2/21;
+  border: 1px solid orange;
+  position: absolute;
+  display: flex;
 }
 
-.opponent_hand_left, .opponent_hand_right {
-  display: flex; /* Use flexbox for layout */
-  flex-direction: row; /* Arrange tiles left to right */
-  height: calc(100% - var(--playerhand-height) - 3px); /* Full width minus player hand height and some separation */
-  aspect-ratio: 2/21; /* Maintain aspect ratio */
-  position: absolute; /* Position absolutely */
-  background-color: rgba(255, 255, 255, 0.8); /* Optional: Background color */
-  border: 1px solid #000; /* Optional: Border for visibility */
+.lefthand {
+  left: 8%;
+  flex-direction: column;
 }
 
-.opponent_hand_left {
-  left: 0; /* Stick to the left side */
+.righthand {
+  right: 8%;
+  flex-direction: column-reverse;
 }
 
-.opponent_hand_right {
-  right: 0; /* Stick to the right side */
+.owndiscard {
+  height: auto;
+  width: 23.33vh;
+  border: 1px solid blue; 
+  position: absolute; 
+  display: flex;
+  flex-wrap: wrap;
 }
 
+.oppdiscard {
+  height: auto; 
+  width: 23.33vh;
+  border: 1px solid blue;
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: flex-end;
+  flex-direction: row-reverse;
+}
+
+.leftdiscard, .rightdiscard {
+  width: auto;
+  height: 23.33vh;
+  border: 1px solid orange;
+  position: absolute;
+  display: flex;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+.leftdiscard {
+  flex-direction: column;
+  flex-wrap: wrap-reverse;
+}
+
+.rightdiscard {
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+}
+
+.centreboard{
+  height: 23.33vh;
+  width: 23.33vh;
+  border: 1px solid purple;
+  position: relative;
+}
 
 .tile {
-  flex: 0 0 auto;
+  height:100%;
   aspect-ratio: 3/4;
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
 }
 
-.button {
-  width: 20px;
-  height: 10px;
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  padding: 10px 20px;
-  font-size: 16px; /* Font size */
-  cursor: pointer; /* Change cursor to pointer */
-  background-color: #4CAF50; /* Green background */
-  color: white; /* White text */
-  border: none; /* Remove border */
-  border-radius: 5px; /* Rounded corners */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
+.turned_tile {
+width: 100%;
+aspect-ratio: 4/3;
+background-size: contain;
+background-repeat: no-repeat;
+}
+
+.discardtile, .opp_discardtile{
+width: 16.66%;
+aspect-ratio: 3/4;
+background-size: contain;
+background-repeat: no-repeat;
+flex: 0 0 auto;
+}
+
+.left_discardtile, .right_discardtile{
+height: 16.66%;
+aspect-ratio: 4/3;
+background-size: contain;
+background-repeat: no-repeat;
+flex: 0 0 auto;
 }

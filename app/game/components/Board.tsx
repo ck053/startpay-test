@@ -19,13 +19,13 @@ export default function Board() {
         // Generate tiles for player (14 tiles)
         const generatedPlayerTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('Regular/0m.png')`, // Adjust the image path as needed
+            backgroundImage: `url('Regular/11.png')`, // Adjust the image path as needed
         }));
 
         // Generate tiles for opponent (14 tiles)
         const generatedOpponentTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
             id: index + 1,
-            backgroundImage: `url('Regular/0m.png')`, // Adjust the image path as needed
+            backgroundImage: `url('Regular/OppBack.png')`, // Adjust the image path as needed
         }));
 
         // Update state with new tiles
@@ -57,8 +57,12 @@ export default function Board() {
         };
     }, [playerTiles]);
     return (
-        <div className="app-container">
         <div className="gameboard">
+            <div className="playerexposed" id="player-exposed">
+            <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            </div>
             <div className='playerhand'>
                 {playerTiles.map(tile => (
                     <div 
@@ -68,7 +72,7 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className="opponent_hand_middle">
+            <div className="opphand">
                 {opponentTiles.map(tile => (
                     <div 
                         key={tile.id} 
@@ -77,10 +81,9 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className='opponent_hand_left'></div>
-            <div className='opponent_hand_right'></div>
+            <div className='lefthand'></div>
+            <div className='righthand'></div>
             <div className='button' onClick={updateHands}></div>
-        </div>
         </div>
     );
 }
