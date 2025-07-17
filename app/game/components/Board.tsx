@@ -100,7 +100,7 @@ export default function Board() {
                     <div 
                         key={tile.id} 
                         style={{ backgroundImage: tile.backgroundImage }} 
-                        className="tile"
+                        className="turned_tile"
                     ></div>
                 ))}
             </div>
@@ -109,7 +109,7 @@ export default function Board() {
                     <div 
                         key={tile.id} 
                         style={{ backgroundImage: tile.backgroundImage }} 
-                        className="tile"
+                        className="turned_tile"
                     ></div>
                 ))}
             </div>
