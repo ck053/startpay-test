@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Import useRouter for navigation
 
 // Import components
 import LoadingState from '@/app/components/LoadingState';
@@ -9,7 +8,6 @@ import ErrorState from '@/app/components/ErrorState';
 import ShowBalance from '@/app/components/ShowBalance';
 
 export default function Home() {
-  const router = useRouter();
   const [initialized, setInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,11 +92,9 @@ export default function Home() {
 
         const { roomId, roomData } = await response.json();
 
-        // Navigate to the game page with room data
-        router.push({
-            pathname: '/game', // Adjust the path to your game page
-            query: { roomId, ...roomData }, // Pass room data as query parameters
-        });
+        console.log('roomId: ', roomId);
+        console.log('roomData: ', roomData);
+
     } catch (error) {
         console.error('Error creating room:', error);
     }
