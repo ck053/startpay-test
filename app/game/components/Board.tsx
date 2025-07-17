@@ -12,6 +12,11 @@ export default function Board() {
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
     const [leftTiles, setLeftTiles] = useState<Tile[]>([]);
     const [rightTiles, setRightTiles] = useState<Tile[]>([]);
+    const [ownDiscardTiles, setOwnDiscardTiles] = useState<Tile[]>([]);
+    const [oppDiscardTiles, setOppDiscardTiles] = useState<Tile[]>([]);
+    const [leftDiscardTiles, setLeftDiscardTiles] = useState<Tile[]>([]);
+    const [rightDiscardTiles, setRightDiscardTiles] = useState<Tile[]>([]);
+    
     const owndiscard = useRef<HTMLDivElement>(null);
     const oppdiscard = useRef<HTMLDivElement>(null);
     const leftdiscard = useRef<HTMLDivElement>(null);
@@ -49,6 +54,39 @@ export default function Board() {
         setRightTiles(generatedRightTiles);
     };
 
+    // Function to add a tile to all discard fields
+    const addTileToDiscards = () => {
+        // Create new tiles for each discard pile
+        const newOwnTile: Tile = {
+            id: ownDiscardTiles.length + 1,
+            backgroundImage: `url('Regular/11.png')`
+        };
+        
+        const newOppTile: Tile = {
+            id: oppDiscardTiles.length + 1,
+            backgroundImage: `url('Regular/311.png')`
+        };
+        
+        const newLeftTile: Tile = {
+            id: leftDiscardTiles.length + 1,
+            backgroundImage: `url('Regular/111.png')`
+        };
+        
+        const newRightTile: Tile = {
+            id: rightDiscardTiles.length + 1,
+            backgroundImage: `url('Regular/211.png')`
+        };
+        
+        // Update each discard pile
+        setOwnDiscardTiles([...ownDiscardTiles, newOwnTile]);
+        setOppDiscardTiles([...oppDiscardTiles, newOppTile]);
+        setLeftDiscardTiles([...leftDiscardTiles, newLeftTile]);
+        setRightDiscardTiles([...rightDiscardTiles, newRightTile]);
+        
+        // Update the board positions after adding tiles
+        setTimeout(discardboardupdate, 0);
+    };
+
     // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
@@ -57,7 +95,7 @@ export default function Board() {
 
     useEffect(() => {
         discardboardupdate();
-    }, [playerTiles, opponentTiles, leftTiles, rightTiles]);
+    }, [playerTiles, opponentTiles, leftTiles, rightTiles, ownDiscardTiles, oppDiscardTiles, leftDiscardTiles, rightDiscardTiles]);
 
     const discardboardupdate = () => {
         let own_discard_height = owndiscard.current?.offsetHeight || 0;
@@ -88,11 +126,14 @@ export default function Board() {
 
     return (
         <div className="gameboard">
-            <button className='button' onClick={discardboardupdate} style={{zIndex: '3'}}> update board </button>
+            <div className="control-buttons" style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 3 }}>
+                <button className='button' onClick={discardboardupdate}>Update Board</button>
+                <button className='button' onClick={addTileToDiscards}>Add Discard Tile</button>
+            </div>
             <div className="playerexposed" id="player-exposed">
-            <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+                <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+                <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+                <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
             </div>
             <div className='playerhand'>
                 {playerTiles.map(tile => (
@@ -132,64 +173,41 @@ export default function Board() {
             </div>
             <div className="centreboard" id="centerboard" ref={centerboard}></div>
             <div className="owndiscard" id="owndiscard" ref={owndiscard}>
-            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+                {ownDiscardTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        className="discardtile" 
+                        style={{ backgroundImage: tile.backgroundImage }}
+                    ></div>
+                ))}
             </div>
             <div className="oppdiscard" id="oppdiscard" ref={oppdiscard}>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
-            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+                {oppDiscardTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        className="opp_discardtile" 
+                        style={{ backgroundImage: tile.backgroundImage }}
+                    ></div>
+                ))}
             </div>
             <div className="leftdiscard" id="leftdiscard" ref={leftdiscard}>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
-            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+                {leftDiscardTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        className="left_discardtile" 
+                        style={{ backgroundImage: tile.backgroundImage }}
+                    ></div>
+                ))}
             </div>
             <div className="rightdiscard" id="rightdiscard" ref={rightdiscard}>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
-            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+                {rightDiscardTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        className="right_discardtile" 
+                        style={{ backgroundImage: tile.backgroundImage }}
+                    ></div>
+                ))}
             </div>
-            </div>
+        </div>
     );
 }
