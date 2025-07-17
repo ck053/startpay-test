@@ -16,7 +16,7 @@ export default function Board() {
     const oppdiscard = useRef<HTMLDivElement>(null);
     const leftdiscard = useRef<HTMLDivElement>(null);
     const rightdiscard = useRef<HTMLDivElement>(null);
-    const centerboardheight = useRef<HTMLDivElement>(null);
+    const centerboard = useRef<HTMLDivElement>(null);
 
     // Function to update hands
     const updateHands = () => {
@@ -60,7 +60,7 @@ export default function Board() {
         let opp_discard_height = oppdiscard.current?.offsetHeight || 0;
         let left_discard_width = leftdiscard.current?.offsetWidth || 0;
         let right_discard_width = rightdiscard.current?.offsetWidth || 0;
-        let centerboard_height = centerboardheight.current?.offsetHeight || 0;
+        let centerboard_height = centerboard.current?.offsetHeight || 0;
 
         let owndiscardtransform = (centerboard_height + own_discard_height) / 2;
         let oppdiscardtransform = (centerboard_height + opp_discard_height) / 2;
@@ -125,7 +125,7 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className="centreboard" id="centerboard"></div>
+            <div className="centreboard" id="centerboard" ref={centerboard}></div>
             <div className="owndiscard" id="owndiscard" ref={owndiscard}>
             <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
             <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
