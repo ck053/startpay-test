@@ -130,7 +130,7 @@ export default function Home() {
   // Main app UI
   return (
     <div className="max-w-md mx-auto p-4 pb-20">
-      <div id='home' className='page'>
+      <div id='home' className='page' style={{zIndex: '1'}}>
         <ShowBalance />
         <h1>Hi {username}!</h1>
         <h1>Welcome to Our Site</h1>
@@ -138,7 +138,7 @@ export default function Home() {
           Go to Game Page
         </button>
       </div>
-      <div id='game' className='page' style={{display: 'none'}}>
+      <div id='game' className='page' style={{display: 'none', zIndex: '0'}}>
         <Board />
       </div>
     </div>
