@@ -129,7 +129,7 @@ export default function Home() {
 
   // Main app UI
   return (
-    <div className="max-w-md mx-auto p-4 pb-20">
+    <div className="">
       <div id='home' className='page' style={{zIndex: '1'}}>
         <ShowBalance />
         <h1>Hi {username}!</h1>
