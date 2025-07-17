@@ -9,6 +9,7 @@ import ErrorState from '@/app/components/ErrorState';
 import ShowBalance from '@/app/components/ShowBalance';
 
 export default function Home() {
+  const router = useRouter();
   const [initialized, setInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +81,6 @@ export default function Home() {
 
   const handleClick = async () => {
     try {
-        const router = useRouter();
         const response = await fetch('/api/createRoom', {
             method: 'POST',
             headers: {
