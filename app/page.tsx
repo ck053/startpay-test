@@ -134,7 +134,7 @@ export default function Home() {
         <ShowBalance />
         <h1>Hi {username}!</h1>
         <h1>Welcome to Our Site</h1>
-        <button onClick={() => handleClick('game')}>
+        <button onClick={() => handleClick('game') } className='button'>
           Go to Game Page
         </button>
       </div>
