@@ -7,17 +7,19 @@ interface Tile {
 }
 var x: number;
 export default function Board() {
-    x = 0;
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
     const [leftTiles, setLeftTiles] = useState<Tile[]>([]);
     const [rightTiles, setRightTiles] = useState<Tile[]>([]);
-    const playerHandRef = useRef<HTMLDivElement>(null); // Create a ref for player hand
+    const owndiscard = useRef<HTMLDivElement>(null);
+    const oppdiscard = useRef<HTMLDivElement>(null);
+    const leftdiscard = useRef<HTMLDivElement>(null);
+    const rightdiscard = useRef<HTMLDivElement>(null);
+    const centerboardheight = useRef<HTMLDivElement>(null);
 
     // Function to update hands
     const updateHands = () => {
-        x += 1;
         // Generate tiles for player (14 tiles)
         const generatedPlayerTiles: Tile[] = Array.from({ length: 10 }, (_, index) => ({
             id: index + 1,
@@ -50,26 +52,36 @@ export default function Board() {
     // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
+        discardboardupdate()
     }, []);
 
-    // Update playerhand height whenever tiles are updated
-    useEffect(() => {
-        const setPlayerHandHeight = () => {
-            if (playerHandRef.current) {
-                const playerHandHeight = playerHandRef.current.offsetHeight; // Get height
-                document.documentElement.style.setProperty('--playerhand-height', `${playerHandHeight}px`); // Set CSS variable
-                console.log(`Setting player hand height to: ${playerHandHeight}px`); // Debugging log
-            }
-        };
+    const discardboardupdate = () => {
+        let own_discard_height = owndiscard.current?.offsetHeight || 0;
+        let opp_discard_height = oppdiscard.current?.offsetHeight || 0;
+        let left_discard_width = leftdiscard.current?.offsetWidth || 0;
+        let right_discard_width = rightdiscard.current?.offsetWidth || 0;
+        let centerboard_height = centerboardheight.current?.offsetHeight || 0;
 
-        // Use setTimeout to ensure the height is set after rendering
-        setTimeout(setPlayerHandHeight, 0); // Delay to wait for render
+        let owndiscardtransform = (centerboard_height + own_discard_height) / 2;
+        let oppdiscardtransform = (centerboard_height + opp_discard_height) / 2;
 
-        // Optionally, you can also call it again after updating tiles
-        return () => {
-            setPlayerHandHeight(); // Cleanup to avoid memory leaks
-        };
-    }, [playerTiles]);
+        if (owndiscard.current) {
+            owndiscard.current.style.transform = `translateY(${owndiscardtransform}px)`;
+        }
+        if (oppdiscard.current) {
+            oppdiscard.current.style.transform = `translateY(-${oppdiscardtransform}px)`;
+        }
+        let leftdiscardtransform = (centerboard_height + left_discard_width) / 2;
+        let rightdiscardtransform = (centerboard_height + right_discard_width) / 2;
+
+        if (leftdiscard.current) {
+            leftdiscard.current.style.transform = `translateX(-${leftdiscardtransform}px)`;
+        }
+        if (rightdiscard.current) {
+            rightdiscard.current.style.transform = `translateX(${rightdiscardtransform}px)`;
+        }
+    };
+
     return (
         <div className="gameboard">
             <div className="playerexposed" id="player-exposed">

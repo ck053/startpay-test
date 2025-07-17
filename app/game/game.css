@@ -15,6 +15,9 @@ html, body {
   flex-direction: column; /* Stack children vertically */
 }
 
+.frame {
+  border: 1px solid black;
+}
 
 .gameboard {
   width: 100vw; /* Use viewport width */
@@ -31,7 +34,6 @@ html, body {
   width: 70%;
   max-height: 14.9vh;
   aspect-ratio: 21 / 2;
-  border: 1px solid orange;
   position: absolute;
   bottom: 2%;
   left: 15%;
