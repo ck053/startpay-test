@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';
 import ShowBalance from '@/app/components/ShowBalance';
+import Board from './game/components/Board';
+import '@/app/game/game.css';
 
 export default function Home() {
   const [initialized, setInitialized] = useState(false);
@@ -75,9 +77,33 @@ export default function Home() {
     return <ErrorState error={error} onRetry={handleRetry} />;
   }
 
+  function navigateTo(path: string) {
+    // Hide all pages
+    document.querySelectorAll<HTMLElement>('.page').forEach(page => {
+      page.style.display = 'none';
+    });
+    
+    // Show the requested page
+    const element = document.getElementById(path);
+    if (element) {
+      element.style.display = 'block';
+    }
+    // Update browser history (optional)
+    history.pushState({}, '', `#${path}`);
+  }
+  
+  // Initialize - show home page by default
+  window.addEventListener('DOMContentLoaded', () => {
+    navigateTo('home');
+    
+    // Handle back/forward navigation
+    window.addEventListener('popstate', () => {
+      const path = window.location.hash.substring(1) || 'home';
+      navigateTo(path);
+    });
+  });
   // Handle start game request
-
-  const handleClick = async () => {
+  const handleClick = async (path: string) => {
     try {
         const response = await fetch('/api/createRoom', {
             method: 'POST',
@@ -95,6 +121,7 @@ export default function Home() {
         console.log('roomId: ', roomId);
         console.log('roomData: ', roomData);
 
+        await navigateTo(path);
     } catch (error) {
         console.error('Error creating room:', error);
     }
@@ -103,12 +130,17 @@ export default function Home() {
   // Main app UI
   return (
     <div className="max-w-md mx-auto p-4 pb-20">
-      <ShowBalance />
-      <h1>Hi {username}!</h1>
-      <h1>Welcome to Our Site</h1>
-      <button className="button" onClick={handleClick}>
-        Go to Game Page
-      </button>
+      <div id='home' className='page'>
+        <ShowBalance />
+        <h1>Hi {username}!</h1>
+        <h1>Welcome to Our Site</h1>
+        <button onClick={() => handleClick('game')}>
+          Go to Game Page
+        </button>
+      </div>
+      <div id='game' className='page'>
+        <Board />
+      </div>
     </div>
   );
 }
