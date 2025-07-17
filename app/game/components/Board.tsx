@@ -11,26 +11,40 @@ export default function Board() {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
+    const [leftTiles, setLeftTiles] = useState<Tile[]>([]);
+    const [rightTiles, setRightTiles] = useState<Tile[]>([]);
     const playerHandRef = useRef<HTMLDivElement>(null); // Create a ref for player hand
 
     // Function to update hands
     const updateHands = () => {
         x += 1;
         // Generate tiles for player (14 tiles)
-        const generatedPlayerTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
+        const generatedPlayerTiles: Tile[] = Array.from({ length: 10 }, (_, index) => ({
             id: index + 1,
             backgroundImage: `url('Regular/11.png')`, // Adjust the image path as needed
         }));
 
         // Generate tiles for opponent (14 tiles)
-        const generatedOpponentTiles: Tile[] = Array.from({ length: 14 }, (_, index) => ({
+        const generatedOpponentTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
             id: index + 1,
             backgroundImage: `url('Regular/OppBack.png')`, // Adjust the image path as needed
+        }));
+
+        const generatedLeftTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
+            id: index + 1,
+            backgroundImage: `url('Regular/LeftBack.png')`, // Adjust the image path as needed
+        }))
+        
+        const generatedRightTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
+            id: index + 1,
+            backgroundImage: `url('Regular/RightBack.png')`, // Adjust the image path as needed
         }));
 
         // Update state with new tiles
         setPlayerTiles(generatedPlayerTiles);
         setOpponentTiles(generatedOpponentTiles);
+        setLeftTiles(generatedLeftTiles);
+        setRightTiles(generatedRightTiles);
     };
 
     // Call updateHands on component mount or whenever needed
@@ -81,9 +95,33 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className='lefthand'></div>
-            <div className='righthand'></div>
-            <div className='button' onClick={updateHands}></div>
-        </div>
+            <div className='lefthand'>
+                {leftTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        style={{ backgroundImage: tile.backgroundImage }} 
+                        className="tile"
+                    ></div>
+                ))}
+            </div>
+            <div className='righthand'>
+                {rightTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        style={{ backgroundImage: tile.backgroundImage }} 
+                        className="tile"
+                    ></div>
+                ))}
+            </div>
+            <div className="centreboard" id="centerboard"></div>
+            <div className="owndiscard" id="owndiscard">
+            </div>
+            <div className="oppdiscard" id="oppdiscard">
+            </div>
+            <div className="leftdiscard" id="leftdiscard">
+            </div>
+            <div className="rightdiscard" id="rightdiscard">
+            </div>
+            </div>
     );
 }
