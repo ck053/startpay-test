@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { discardboardupdate } from './game/components/Board';
+import { useEffect, useState} from 'react';
 // Import components
 import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';
@@ -122,13 +121,6 @@ export default function Home() {
         console.log('roomData: ', roomData);
 
         await navigateTo(path);
-        const owndiscard = useRef<HTMLDivElement>(null);
-        const oppdiscard = useRef<HTMLDivElement>(null);
-        const leftdiscard = useRef<HTMLDivElement>(null);
-        const rightdiscard = useRef<HTMLDivElement>(null);
-        const centerboard = useRef<HTMLDivElement>(null);
-        discardboardupdate(owndiscard, oppdiscard, leftdiscard, rightdiscard, centerboard);
-        
     } catch (error) {
         console.error('Error creating room:', error);
     }

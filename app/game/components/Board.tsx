@@ -5,34 +5,7 @@ interface Tile {
     id: number;
     backgroundImage: string;
 }
-
-export const discardboardupdate = (owndiscard: React.RefObject<HTMLDivElement | null>, oppdiscard: React.RefObject<HTMLDivElement | null>, leftdiscard: React.RefObject<HTMLDivElement | null>, rightdiscard: React.RefObject<HTMLDivElement | null>, centerboard: React.RefObject<HTMLDivElement | null>) => {
-    let own_discard_height = owndiscard.current?.offsetHeight || 0;
-    let opp_discard_height = oppdiscard.current?.offsetHeight || 0;
-    let left_discard_width = leftdiscard.current?.offsetWidth || 0;
-    let right_discard_width = rightdiscard.current?.offsetWidth || 0;
-    let centerboard_height = centerboard.current?.offsetHeight || 0;
-
-    let owndiscardtransform = (centerboard_height + own_discard_height) / 2;
-    let oppdiscardtransform = (centerboard_height + opp_discard_height) / 2;
-
-    if (owndiscard.current) {
-        owndiscard.current.style.transform = `translateY(${owndiscardtransform}px)`;
-    }
-    if (oppdiscard.current) {
-        oppdiscard.current.style.transform = `translateY(-${oppdiscardtransform}px)`;
-    }
-    let leftdiscardtransform = (centerboard_height + left_discard_width) / 2;
-    let rightdiscardtransform = (centerboard_height + right_discard_width) / 2;
-
-    if (leftdiscard.current) {
-        leftdiscard.current.style.transform = `translateX(-${leftdiscardtransform}px)`;
-    }
-    if (rightdiscard.current) {
-        rightdiscard.current.style.transform = `translateX(${rightdiscardtransform}px)`;
-    }
-};
-
+var x: number;
 export default function Board() {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
@@ -79,13 +52,43 @@ export default function Board() {
     // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
-        discardboardupdate(owndiscard, oppdiscard, leftdiscard, rightdiscard, centerboard);
+        discardboardupdate()
     }, []);
 
+    useEffect(() => {
+        discardboardupdate();
+    }, [playerTiles, opponentTiles, leftTiles, rightTiles]);
 
+    const discardboardupdate = () => {
+        let own_discard_height = owndiscard.current?.offsetHeight || 0;
+        let opp_discard_height = oppdiscard.current?.offsetHeight || 0;
+        let left_discard_width = leftdiscard.current?.offsetWidth || 0;
+        let right_discard_width = rightdiscard.current?.offsetWidth || 0;
+        let centerboard_height = centerboard.current?.offsetHeight || 0;
+
+        let owndiscardtransform = (centerboard_height + own_discard_height) / 2;
+        let oppdiscardtransform = (centerboard_height + opp_discard_height) / 2;
+
+        if (owndiscard.current) {
+            owndiscard.current.style.transform = `translateY(${owndiscardtransform}px)`;
+        }
+        if (oppdiscard.current) {
+            oppdiscard.current.style.transform = `translateY(-${oppdiscardtransform}px)`;
+        }
+        let leftdiscardtransform = (centerboard_height + left_discard_width) / 2;
+        let rightdiscardtransform = (centerboard_height + right_discard_width) / 2;
+
+        if (leftdiscard.current) {
+            leftdiscard.current.style.transform = `translateX(-${leftdiscardtransform}px)`;
+        }
+        if (rightdiscard.current) {
+            rightdiscard.current.style.transform = `translateX(${rightdiscardtransform}px)`;
+        }
+    };
 
     return (
         <div className="gameboard">
+            <button className='button' onClick={discardboardupdate} style={{zIndex: '3'}}> update board </button>
             <div className="playerexposed" id="player-exposed">
             <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
             <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
