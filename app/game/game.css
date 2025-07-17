@@ -71,13 +71,13 @@ html, body {
 }
 
 .lefthand {
-  left: 8%;
   flex-direction: column;
+  transform: translateX(-48vh);
 }
 
 .righthand {
-  right: 8%;
   flex-direction: column-reverse;
+  transform: translateX(48vh);
 }
 
 .owndiscard {
