@@ -115,12 +115,63 @@ export default function Board() {
             </div>
             <div className="centreboard" id="centerboard"></div>
             <div className="owndiscard" id="owndiscard">
+            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
+            <div className="discardtile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
             </div>
             <div className="oppdiscard" id="oppdiscard">
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
+            <div className="opp_discardtile" style={{ backgroundImage: `url('Regular/311.png')`}}></div>
             </div>
             <div className="leftdiscard" id="leftdiscard">
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
+            <div className="left_discardtile" style={{ backgroundImage: `url('Regular/111.png')`}}></div>
             </div>
             <div className="rightdiscard" id="rightdiscard">
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
+            <div className="right_discardtile" style={{ backgroundImage: `url('Regular/211.png')`}}></div>
             </div>
             </div>
     );
