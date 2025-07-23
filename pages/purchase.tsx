@@ -24,7 +24,25 @@ export default function Home() {
     type: 'purchase' | 'refund' | null;
     purchase?: CurrentPurchaseWithSecret;
   }>({ type: null });
-  const [username, setUsername] = useState<string>('')
+  const [username, setUsername] = useState<string>('');
+  const [balance, setBalance] = useState<number>(-1);
+
+  const fetchBalance = async (userid: string) => {
+    try {
+      const response = await fetch('/api/get-balance', {
+        method: 'POST',
+        body: userid
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBalance(data.balance);
+      } else {
+        console.log(data.error || 'Failed to fetch balance');
+      }
+    } catch (err) {
+      console.log('Network error');
+    } 
+  };
 
   useEffect(() => {
     // Import TWA SDK dynamically to avoid SSR issues
@@ -46,6 +64,7 @@ export default function Home() {
             // Access user data directly from the WebApp object
             const user = WebApp.initDataUnsafe.user;
             setUserId(user.id?.toString() || '');
+            await fetchBalance(user.id?.toString());
             const userName = user.first_name || '';
             const userLastName = user.last_name || '';
             setUsername(`${userName}${userLastName ? ' ' + userLastName : ''}`);
@@ -88,6 +107,7 @@ export default function Home() {
       
       const data = await response.json();
       setPurchases(data.purchases || []);
+      fetchBalance(userId);
     } catch (e) {
       console.error('Error fetching purchases:', e);
       setError('Failed to load purchase history');
@@ -257,7 +277,7 @@ export default function Home() {
           onClose={handleCloseModal}
         />
       )}
-      <ShowBalance />
+      <ShowBalance balance={balance}/>
       <BackButton />
       <h1 className="text-2xl font-bold mb-6 text-center">Digital Store</h1>
       

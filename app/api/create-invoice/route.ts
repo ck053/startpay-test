@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
     const uniqueId = uuidv4();
     const body = await req.json();
     const { userId, itemId } = body;
-
     if (!userId || !itemId) {
       return NextResponse.json({ error: 'Missing required fields: userId and itemId' }, { status: 400 });
     }

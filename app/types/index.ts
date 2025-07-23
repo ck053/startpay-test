@@ -12,4 +12,4 @@ export interface CurrentPurchaseWithSecret {
   transactionId: string;
   timestamp: number;
   secret: string;
-} 
+}

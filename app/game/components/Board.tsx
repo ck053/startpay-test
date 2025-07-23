@@ -1,12 +1,58 @@
+import { roomdata } from '@/app/data/game';
 import { useEffect, useState , useRef} from 'react';
 
 // Define the type for a tile
 interface Tile {
     id: number;
+    value: number;
     backgroundImage: string;
 }
-var x: number;
-export default function Board() {
+
+interface ExposedTile {
+    id: number;
+    value: number;
+    backgroundImage: string;
+    style: { marginRight: '2vh' } | {};
+}
+
+interface KanTile {
+    id: string;
+    groupIndex: number;
+    type: string;
+    value: number;
+    backgroundImage: string;
+    marginRight: string;
+    list: number[];
+}
+
+type BoardProps = {
+    hand: number[];
+    roomData: roomdata;
+    actions: MahjongAction[];
+    setHand: React.Dispatch<React.SetStateAction<number[]>>;
+    setRoomData: React.Dispatch<React.SetStateAction<roomdata>>;
+    setActions: React.Dispatch<React.SetStateAction<MahjongAction[]>>;
+    onDiscardTile: (tileValue: number, id: number) => Promise<void>;
+    handleAction: (action: MahjongAction) => Promise<void>;
+    HandleAction: (value: number, type: string, list: number[]) => Promise<void>;
+    centerboard: React.RefObject<HTMLDivElement>;
+    playerHandRef: React.RefObject<HTMLDivElement>;
+    leftHandRef: React.RefObject<HTMLDivElement>;
+    rightHandRef: React.RefObject<HTMLDivElement>;
+    oppHandRef: React.RefObject<HTMLDivElement>;
+    owndiscard: React.RefObject<HTMLDivElement>;
+    oppdiscard: React.RefObject<HTMLDivElement>;
+    leftdiscard: React.RefObject<HTMLDivElement>;
+    rightdiscard: React.RefObject<HTMLDivElement>;
+    playerExposedRef: React.RefObject<HTMLDivElement>;
+    choosetileRef: React.RefObject<HTMLDivElement>;
+    kan_list: number[][];
+    chi_list: number[][];
+};
+
+export type MahjongAction = 'chi' | 'pon' | 'kan' | 'ron' | 'tsumo' | 'skip' | 'end';
+
+export default function Board({ hand, setHand, roomData, setRoomData, onDiscardTile, actions, setActions, handleAction, HandleAction, centerboard, playerHandRef, oppHandRef, leftHandRef, rightHandRef, owndiscard, oppdiscard, leftdiscard, rightdiscard, playerExposedRef, kan_list, chi_list, choosetileRef}: BoardProps) {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
@@ -16,86 +62,171 @@ export default function Board() {
     const [oppDiscardTiles, setOppDiscardTiles] = useState<Tile[]>([]);
     const [leftDiscardTiles, setLeftDiscardTiles] = useState<Tile[]>([]);
     const [rightDiscardTiles, setRightDiscardTiles] = useState<Tile[]>([]);
+    const [kan_listTiles, setKan_listTiles] = useState<KanTile[]>([]);
+    const playerlist = roomData.playerdatalist;
+    const [owndiscard_list, oppdiscard_list, leftdiscard_list, rightdiscard_list] = [playerlist[0].discard, playerlist[2].discard, playerlist[3].discard, playerlist[1].discard];
+    const playerExposedList = playerlist[0].exposed;
+    const [playerExposedTiles, setPlayerExposedTiles] = useState<ExposedTile[]>([]);
     
-    const owndiscard = useRef<HTMLDivElement>(null);
-    const oppdiscard = useRef<HTMLDivElement>(null);
-    const leftdiscard = useRef<HTMLDivElement>(null);
-    const rightdiscard = useRef<HTMLDivElement>(null);
-    const centerboard = useRef<HTMLDivElement>(null);
+    const button_area = useRef<HTMLDivElement>(null);
+
+    const action_text: Record<MahjongAction, string> = {
+        'chi': '吃',
+        'pon': '碰',
+        'kan': '槓',
+        'ron': '胡',
+        'tsumo': '自摸',
+        'skip': '跳過',
+        'end': ''
+    }
 
     // Function to update hands
     const updateHands = () => {
-        // Generate tiles for player (14 tiles)
-        const generatedPlayerTiles: Tile[] = Array.from({ length: 10 }, (_, index) => ({
-            id: index + 1,
-            backgroundImage: `url('Regular/11.png')`, // Adjust the image path as needed
-        }));
-
         // Generate tiles for opponent (14 tiles)
         const generatedOpponentTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
             id: index + 1,
+            value: -1,
             backgroundImage: `url('Regular/OppBack.png')`, // Adjust the image path as needed
         }));
 
         const generatedLeftTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
             id: index + 1,
+            value: -1,
             backgroundImage: `url('Regular/LeftBack.png')`, // Adjust the image path as needed
         }))
         
         const generatedRightTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
             id: index + 1,
+            value: -1,
             backgroundImage: `url('Regular/RightBack.png')`, // Adjust the image path as needed
         }));
 
         // Update state with new tiles
-        setPlayerTiles(generatedPlayerTiles);
         setOpponentTiles(generatedOpponentTiles);
         setLeftTiles(generatedLeftTiles);
         setRightTiles(generatedRightTiles);
     };
 
-    // Function to add a tile to all discard fields
-    const addTileToDiscards = () => {
-        // Create new tiles for each discard pile
-        const newOwnTile: Tile = {
-            id: ownDiscardTiles.length + 1,
-            backgroundImage: `url('Regular/11.png')`
-        };
-        
-        const newOppTile: Tile = {
-            id: oppDiscardTiles.length + 1,
-            backgroundImage: `url('Regular/311.png')`
-        };
-        
-        const newLeftTile: Tile = {
-            id: leftDiscardTiles.length + 1,
-            backgroundImage: `url('Regular/111.png')`
-        };
-        
-        const newRightTile: Tile = {
-            id: rightDiscardTiles.length + 1,
-            backgroundImage: `url('Regular/211.png')`
-        };
-        
-        // Update each discard pile
-        setOwnDiscardTiles([...ownDiscardTiles, newOwnTile]);
-        setOppDiscardTiles([...oppDiscardTiles, newOppTile]);
-        setLeftDiscardTiles([...leftDiscardTiles, newLeftTile]);
-        setRightDiscardTiles([...rightDiscardTiles, newRightTile]);
-        
-        // Update the board positions after adding tiles
-        setTimeout(discardboardupdate, 0);
-    };
+    // Function to handle discard
+    const HandleDiscard = async (value: number, id: number) => {
+        //check tile's availability
+        if (!hand.includes(value)) {
+            return;
+        }
+        //send request to server
+        await onDiscardTile(value, id);
+    }
 
     // Call updateHands on component mount or whenever needed
     useEffect(() => {
         updateHands(); // Call this function to initialize the hands
-        discardboardupdate()
+        discardboardupdate();
     }, []);
+
+
+
+    useEffect(() => {
+        const newTiles = hand.map((tileValue, index) => ({
+          id: index+1, // Use the tile value as ID (or generate a unique one)
+          value: tileValue,
+          backgroundImage: `url('Regular/${tileValue}.png')`,
+        }));
+        setPlayerTiles(newTiles);
+      }, [hand]);
+    
+    useEffect(() => {
+        const tiles: ExposedTile[] = [];
+        let idCounter = 1;
+
+        playerExposedList.forEach((group, groupIndex) => {
+            group.forEach((value, tileIndexInGroup) => {
+                const isLastInGroup = tileIndexInGroup === group.length - 1;
+            
+                tiles.push({
+                    id: idCounter++,
+                    value,
+                    backgroundImage: `url('Regular/${value}.png')`,
+                    // Apply margin to the last tile in each group
+                    style: isLastInGroup ? { marginRight: '2vh' } : {},
+                });
+            });
+        });
+        setPlayerExposedTiles(tiles);
+    }, [playerExposedList])
+
+    useEffect(()=> {
+        const new_owndiscard = owndiscard_list.map((value, index) =>({
+            id: index+1,
+            value,
+            backgroundImage: `url('Regular/${value}.png')`,
+        }));
+        const new_oppdiscard = oppdiscard_list.map((value, index) =>({
+            id: index+1,
+            value,
+            backgroundImage: `url('Regular/${value+300}.png')`,
+        }));
+        const new_leftdiscard = leftdiscard_list.map((value, index) =>({
+            id: index+1,
+            value,
+            backgroundImage: `url('Regular/${value+100}.png')`,
+        }));
+        const new_rightdiscard = rightdiscard_list.map((value, index) =>({
+            id: index+1,
+            value,
+            backgroundImage: `url('Regular/${value+200}.png')`,
+        }));
+        setOwnDiscardTiles(new_owndiscard);
+        setOppDiscardTiles(new_oppdiscard);
+        setLeftDiscardTiles(new_leftdiscard);
+        setRightDiscardTiles(new_rightdiscard);
+    }, [owndiscard_list, oppdiscard_list, leftdiscard_list, rightdiscard_list]);
 
     useEffect(() => {
         discardboardupdate();
-    }, [playerTiles, opponentTiles, leftTiles, rightTiles, ownDiscardTiles, oppDiscardTiles, leftDiscardTiles, rightDiscardTiles]);
+    },[roomData]);
+
+    useEffect(() => {
+        discardboardupdate();
+    }, [ownDiscardTiles, oppDiscardTiles, leftDiscardTiles, rightDiscardTiles]);
+
+    useEffect(() => {
+        updateKanTiles(kan_list);
+    }, [kan_list]);
+
+    useEffect(() => {
+        updateChiTiles(chi_list);
+    }, [chi_list]);
+
+    useEffect(() => {
+        if (!button_area.current) return;
+        //update buttons
+        // Clear all existing buttons
+        button_area.current.innerHTML = '';
+
+        // If no actions, just return
+        if (actions.length === 0) return;
+
+        // Create buttons for each action
+        actions.forEach((action) => {
+            const button = document.createElement('button');
+            button.className = 'action-button'; 
+            button.id = `${action}-button`;
+            button.textContent = action_text[action];
+        
+            // Add click handler
+            button.onclick = () => handleAction(action);
+        
+            button_area.current?.appendChild(button);
+        });
+
+        // Add skip button at the end
+        const skipButton = document.createElement('button');
+        skipButton.className = 'action-button';
+        skipButton.id = 'skip-button';
+        skipButton.textContent = '跳過';
+        skipButton.onclick = () => handleAction('skip');
+        button_area.current?.appendChild(skipButton);
+    }, [actions])
 
     const discardboardupdate = () => {
         let own_discard_height = owndiscard.current?.offsetHeight || 0;
@@ -104,8 +235,9 @@ export default function Board() {
         let right_discard_width = rightdiscard.current?.offsetWidth || 0;
         let centerboard_height = centerboard.current?.offsetHeight || 0;
 
-        let owndiscardtransform = (centerboard_height + own_discard_height) / 2;
-        let oppdiscardtransform = (centerboard_height + opp_discard_height) / 2;
+        let up = centerboard_height / 4.8; 
+        let owndiscardtransform = (centerboard_height + own_discard_height) / 2 - up;
+        let oppdiscardtransform = (centerboard_height + opp_discard_height) / 2 + up;
 
         if (owndiscard.current) {
             owndiscard.current.style.transform = `translateY(${owndiscardtransform}px)`;
@@ -117,34 +249,98 @@ export default function Board() {
         let rightdiscardtransform = (centerboard_height + right_discard_width) / 2;
 
         if (leftdiscard.current) {
-            leftdiscard.current.style.transform = `translateX(-${leftdiscardtransform}px)`;
+            leftdiscard.current.style.transform = `translateX(-${leftdiscardtransform}px) translateY(-${up}px)`;
         }
         if (rightdiscard.current) {
-            rightdiscard.current.style.transform = `translateX(${rightdiscardtransform}px)`;
+            rightdiscard.current.style.transform = `translateX(${rightdiscardtransform}px) translateY(-${up}px)`;
+        }
+        if (centerboard.current) {
+            centerboard.current.style.transform = `translateY(-${up}px)`;
         }
     };
 
+    const Close_Choose = () => {
+        if (choosetileRef.current){
+            choosetileRef.current.style.display = 'none';
+          }
+    }
+
+    // create choose tile button
+    const updateKanTiles = (kan_list: number[][]) => {
+        const newTiles = kan_list.flatMap((tileGroup, groupIndex) => {
+          const shouldAddMargin = groupIndex < kan_list.length - 1;
+          
+          return tileGroup.map((tileValue, tileIndex) => ({
+            id: `${groupIndex}-${tileIndex}`, // Unique ID
+            groupIndex,
+            type: 'kan',
+            value: tileValue,
+            backgroundImage: `url('Regular/${tileValue}.png')`,
+            marginRight: (tileIndex === tileGroup.length - 1 && shouldAddMargin) ? '2vh' : '0',
+            list: []
+          }));
+        });
+      
+        setKan_listTiles(newTiles);
+    };
+
+    // create choose tile button
+    const updateChiTiles = (list: number[][]) => {
+        const newTiles = list.flatMap((tileGroup, groupIndex) => {
+          const shouldAddMargin = groupIndex < list.length - 1;
+          
+          return tileGroup.map((tileValue, tileIndex) => ({
+            id: `${groupIndex}-${tileIndex}`, // Unique ID
+            groupIndex,
+            type: 'chi',
+            value: tileValue,
+            backgroundImage: `url('Regular/${tileValue}.png')`,
+            marginRight: (tileIndex === tileGroup.length - 1 && shouldAddMargin) ? '2vh' : '0',
+            list: list[groupIndex]
+          }));
+        });
+        setKan_listTiles(newTiles);
+      };
+
     return (
         <div className="gameboard">
-            <div className="control-buttons" style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 3 }}>
-                <button className='button' onClick={discardboardupdate}>Update Board</button>
-                <button className='button' onClick={addTileToDiscards}>Add Discard Tile</button>
-            </div>
-            <div className="playerexposed" id="player-exposed">
-                <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-                <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-                <div className="tile" style={{ backgroundImage: `url('Regular/11.png')`}}></div>
-            </div>
-            <div className='playerhand'>
-                {playerTiles.map(tile => (
-                    <div 
-                        key={tile.id} 
-                        style={{ backgroundImage: tile.backgroundImage }} 
+            <div className="choosing_tile" ref={choosetileRef}>
+                {kan_listTiles.map((tile) => (
+                    <div
+                        key={tile.id}
+                        data-tile-groupindex={tile.groupIndex}
                         className="tile"
+                        style={{
+                            backgroundImage: tile.backgroundImage,
+                            marginRight: tile.marginRight,
+                        }}
+                        onClick={() => HandleAction(tile.value, tile.type, tile.list)}
+                    />
+                    ))}
+                <button className="close_button" onClick={Close_Choose}> X </button>
+            </div>
+            <div className='button-area' ref={button_area}></div>
+            <div className="playerexposed" id="player-exposed" ref={playerExposedRef}>
+                {playerExposedTiles.map(tile => (
+                    <div 
+                        key={tile.id}
+                        style={{ backgroundImage: tile.backgroundImage, ...tile.style }} 
+                        className="exposed_tile"
                     ></div>
                 ))}
             </div>
-            <div className="opphand">
+            <div className='playerhand' ref={playerHandRef}>
+                {playerTiles.map(tile => (
+                    <div 
+                        key={tile.id} 
+                        data-tile-id={tile.id}
+                        style={{ backgroundImage: tile.backgroundImage }} 
+                        className="tile"
+                        onClick={() => HandleDiscard(tile.value, tile.id)}
+                    ></div>
+                ))}
+            </div>
+            <div className="opphand" ref={oppHandRef}>
                 {opponentTiles.map(tile => (
                     <div 
                         key={tile.id} 
@@ -153,7 +349,7 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className='lefthand'>
+            <div className='lefthand' ref={leftHandRef}>
                 {leftTiles.map(tile => (
                     <div 
                         key={tile.id} 
@@ -162,7 +358,7 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className='righthand'>
+            <div className='righthand' ref={rightHandRef}>
                 {rightTiles.map(tile => (
                     <div 
                         key={tile.id} 
@@ -171,7 +367,7 @@ export default function Board() {
                     ></div>
                 ))}
             </div>
-            <div className="centreboard" id="centerboard" ref={centerboard}></div>
+            <div className="centerboard" id="centerboard" ref={centerboard}></div>
             <div className="owndiscard" id="owndiscard" ref={owndiscard}>
                 {ownDiscardTiles.map(tile => (
                     <div 

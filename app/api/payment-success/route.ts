@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSecretForItem } from '@/app/server/item-secrets';
+import { getSecretForItem, getValueForItem } from '@/app/server/item-secrets';
 
 // Make purchases accessible to other routes
 // @ts-ignore - This is a demo, in a real app we would use a proper data store
@@ -25,6 +25,11 @@ export async function POST(req: NextRequest) {
 
     // Get the secret code for this item
     const secret = getSecretForItem(itemId);
+    const value = getValueForItem(itemId);
+
+    // Update user balance
+    // @ts-ignore
+    global.userdata[userId].balance += value;
     
     if (!secret) {
       return NextResponse.json({ error: 'Secret not found for this item' }, { status: 404 });

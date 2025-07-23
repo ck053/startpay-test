@@ -42,4 +42,4 @@ export const ITEMS: Item[] = [
 // Helper function to get item by ID
 export function getItemById(id: string): Item | undefined {
   return ITEMS.find(item => item.id === id);
-} 
+}

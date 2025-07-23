@@ -15,10 +15,6 @@ html, body {
   flex-direction: column; /* Stack children vertically */
 }
 
-.frame {
-  border: 1px solid black;
-}
-
 .gameboard {
   width: 100vw; /* Use viewport width */
   height: 100vh; /* Use viewport height */
@@ -43,9 +39,7 @@ html, body {
 
 .playerexposed {
   width: 70%;
-  max-height: 14.9vh;
-  aspect-ratio: 21 / 2;
-  border: 1px solid orange;
+  aspect-ratio: 25 / 2;
   position: absolute;
   bottom: 2%;
   right: 2%;
@@ -57,7 +51,6 @@ html, body {
 .opphand {
   width: 60vh;
   aspect-ratio: 21/2;
-  border: 1px solid orange;
   position: absolute;
   top: 2%;
   display: flex;
@@ -67,9 +60,9 @@ html, body {
 .lefthand, .righthand{
   height: 60vh;
   aspect-ratio: 2/21;
-  border: 1px solid orange;
   position: absolute;
   display: flex;
+  z-index: -2;
 }
 
 .lefthand {
@@ -83,29 +76,27 @@ html, body {
 }
 
 .owndiscard {
-  height: auto;
+  height: 26vh;
   width: 23.33vh;
-  border: 1px solid blue; 
   position: absolute; 
   display: flex;
   flex-wrap: wrap;
+  align-content: start;
 }
 
 .oppdiscard {
-  height: auto; 
+  height: 26vh;
   width: 23.33vh;
-  border: 1px solid blue;
   position: absolute;
   display: flex;
   flex-wrap: wrap-reverse;
-  align-items: flex-end;
   flex-direction: row-reverse;
+  align-content: end;
 }
 
 .leftdiscard, .rightdiscard {
-  width: auto;
+  width: 26vh;
   height: 23.33vh;
-  border: 1px solid orange;
   position: absolute;
   display: flex;
   justify-content: flex-start;
@@ -122,11 +113,15 @@ html, body {
   flex-wrap: wrap;
 }
 
-.centreboard{
+.centerboard{
   height: 23.33vh;
   width: 23.33vh;
-  border: 1px solid purple;
-  position: relative;
+  background-color: darkgray;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -10;
 }
 
 .tile {
@@ -144,6 +139,7 @@ background-repeat: no-repeat;
 }
 
 .discardtile, .opp_discardtile{
+height: auto;
 width: 16.66%;
 aspect-ratio: 3/4;
 background-size: contain;
@@ -157,4 +153,113 @@ aspect-ratio: 4/3;
 background-size: contain;
 background-repeat: no-repeat;
 flex: 0 0 auto;
+}
+
+.exposed_tile {
+  height:100%;
+  aspect-ratio: 3/4;
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: slideToHandFromLeft 0.5s ease-out forwards;
+}
+
+.button-area {
+  width: 90%;
+  height: 8.5vh;
+  position: absolute;
+  bottom: 9vw;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap:nowrap;
+}
+
+.action-button{
+  height: 8.5vh;
+  width: 18vh;
+  border-radius: 20px;
+  margin-right:20px;
+  font-weight: bold;
+  border: 0.3vw solid gray;
+  opacity: 0.85;
+}
+
+#claim-win-button, #tsumo-button {
+  background-color: red;
+  color:rgb(255, 196, 0);
+}
+
+#pon-button {
+  background-color: aqua;
+  color: rgb(230, 5, 5);
+}
+
+#chi-button {
+  background-color: rgb(65, 222, 25);
+  color:rgb(25, 115, 217);
+}
+
+#kan-button {
+  background-color:navajowhite;
+}
+
+#skip-button {
+  background-color: darkgrey;
+  color: rgb(250, 241, 241);
+}
+
+.choosing_tile {
+  border: 5px solid gray;
+  border-radius: 20px;
+  height: 12.5vh;
+  z-index: 2;
+  bottom: 9vw;
+  display: none;
+  position: absolute;
+}
+
+.close_button {
+  height: 4.25vh;
+  width: 4.25vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #ff4444; /* Alert red */
+  color: white;
+  font-weight: bold;
+  font-size: 2vh;
+  border-radius: 0.5vh;
+  cursor: pointer;
+
+  /* Spacing */
+  margin-left: 2vh; /* Matches your tile group spacing */
+  
+  /* Interaction */
+  transition: all 0.2s ease;
+}
+
+.close_button:hover {
+  background-color: #cc0000; /* Darker red on hover */
+  transform: scale(1.05); /* Subtle "pop" effect */
+}
+
+.close_button:active {
+  transform: scale(0.98); /* Pressed-down effect */
+}
+
+/* Animation */
+
+@keyframes slideToHand {
+  from { transform: translate( var(--start-x), var(--start-y)); }
+  to { transform: translate(0, 0); }
+}
+
+@keyframes slideToHandFromLeft {
+  from { transform: translate(-10vw , 0); }
+  to { transform: translate(0, 0); }
+}
+
+.tile-animate {
+  animation: slideToHand 0.5s ease-out forwards;
 }

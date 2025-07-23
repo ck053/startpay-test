@@ -1,0 +1,78 @@
+interface playerdata {
+    position: number,
+    exposed: number[][],
+    discard: number[],
+    name: string,
+    hand: number[],
+    last_drawn: number
+}
+
+export interface roomdata {
+    current_player: number,
+    cards_remain: number,
+    last_drawn: number,
+    last_discard: number,
+    wall: Array<[]>,
+    playerdatalist: Array<[]>,
+    stars: number
+}
+
+var info = [{ // public
+    rounds: 0,
+    continueround: 0,
+    riichideposit: 0,
+    dora: [],
+    currentplayer: 0,
+    cardsremain: 112,
+    lastdrawn: 0,
+    lastdiscard: 0,
+    lastplay:0,
+    point:[35000,35000,35000],
+}, { // private
+    ura: [],
+    wall:[],
+    lastdrawn: 0,
+}]
+var player = [];
+//TODO: player data frame
+for (let i=0;i<3;i++){ // public
+    player[i] = [{
+    position: 0,
+    exposed: [],
+    riichi: false,
+    ippasu: false,
+    discard:[],
+    seasontiles:0,
+    name: "玩家"+String(i+1),
+    menzen:true,
+}, { // private
+    hand: [1000],
+    tenpai: {},
+    winningtile: {},
+    furiten: [],
+}]
+}
+  for (let i=0;i<3;i++){ // public
+    data[i] = [{
+    position: 0,
+    exposed: [],
+    riichi: false,
+    ippasu: false,
+    discard:[],
+    seasontiles:0,
+    name: "玩家"+String(i+1),
+    menzen:true,
+  }, { // private
+    hand: [1000],
+    tenpai: {},
+    winningtile: {},
+    furiten: [],
+  }]
+  }
+
+
+
+
+
+//TODO:
+First ask for validation for the star
