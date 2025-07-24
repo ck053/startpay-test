@@ -206,14 +206,12 @@ export default function Home() {
         // get roomdata
         const { roomId, roomData } = await response.json();
         setRoomId(roomId);
-        console.log('roomId: ', roomId);
-        console.log('roomData: ', roomData);
 
         // show game page
         await navigateTo(path);
         
         // update player hand
-        setHand([...roomData['playerdatalist']['0']['hand']]);
+        setHand([...roomData.playerdatalist[0].hand]);
 
         // ask for first tile
         const ready = await fetch( '/api/deal', {
@@ -232,11 +230,10 @@ export default function Home() {
         console.log('New tile:', new_tile);
 
         // update player hand
-        roomData['playerdatalist'][0]['hand'].push(new_tile);
-        console.log("new player hand:", roomData['playerdatalist'][0]['hand'])
+        roomData.playerdatalist[0].hand.push(new_tile);
         setRoomData(roomData);
-        setHand([...roomData['playerdatalist']['0']['hand']]);
-        //TODO: handle button
+        setHand([...roomData.playerdatalist[0].hand]);
+        // handle button
         setActions(action);
 
     } catch (error) {
@@ -385,8 +382,8 @@ export default function Home() {
               if (!leftdiscard.current) return;
               const { x: LeftDiscardX, y: LeftDiscardY, width: LeftDiscardW, height:LeftDiscardH } = getoppCoordinates(leftdiscard.current);
               const LefttileElement = document.createElement('div');
-              const LeftstartX = LeftHandX - LeftDiscardX - LeftDiscardH / 2 / 4 * 3; 
-              const LeftstartY = LeftHandY - LeftDiscardY - LeftDiscardH / 2;
+              const LeftstartX = LeftHandX - LeftDiscardX - LeftDiscardH / 2 / 4 * 3;
+              const LeftstartY = LeftHandY + LeftDiscardY - LeftDiscardH / 2;
               LefttileElement.style.backgroundImage = `url('Regular/${action.value+100}.png')`;
               LefttileElement.style.setProperty('--start-x', `${LeftstartX}px`);
               LefttileElement.style.setProperty('--start-y', `${LeftstartY}px`);
@@ -422,7 +419,7 @@ export default function Home() {
       });
       if (!response.ok) {console.log("Server rejected discard"); return;}
       setActions([]);
-      // TODO: run animation by replay
+      // run animation by replay
       const { roomdata, action: discard_action, replay} = await response.json()
       if (!skip) replay.unshift({action: 'discard', value: tile, player: 0});
       console.log('Replay:', replay);
@@ -486,7 +483,6 @@ export default function Home() {
       
   };
 
-  // TODO: disable button on click until response
   const handleAction = async (action: MahjongAction) => {
     try {
       switch(action){
@@ -537,7 +533,6 @@ export default function Home() {
           setActions([]);
           return;
         case 'kan':
-          // TODO: add kan & closed kan
           if (roomData.current_player !== 0) {
             // open kan
             const kan_response = await fetch( '/api/claim-kan', {
@@ -647,7 +642,7 @@ export default function Home() {
           navigateTo('win');
           return;
         case 'skip':
-          // TODO: send skip action to server
+          // send skip action to server
           setActions([]);
           if (roomData.current_player !== 0) handleDiscardTile(-1, -1, true);
 

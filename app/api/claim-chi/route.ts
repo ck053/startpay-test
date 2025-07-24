@@ -1,4 +1,4 @@
-import { checkchi } from "@/app/data/game";
+import { checkchi, FetchRoomData } from "@/app/data/game";
 import { NextResponse, NextRequest } from "next/server";
 
 function removetile(list: number[], tile: number) {
@@ -21,18 +21,20 @@ export async function POST(req: NextRequest) {
             throw new Error("Room not listening");
         }
         const player = roomdata.playerdatalist[0];
-        // check if pon available
+        // check if chi available
         if (!checkchi(player.hand, roomdata.last_discard).includes(list)) {
             // remove card from hand and discard
             player.exposed.push([...list]);
+            removetile(roomdata.playerdatalist[roomdata.current_player].discard, roomdata.last_discard);
             removetile(list, roomdata.last_discard);
             removetile(player.hand, list[0]);
             removetile(player.hand, list[1]);
             roomdata.listening = true;
             roomdata.current_player = 0;
-            return NextResponse.json({ success:true, roomdata });
+            const PublicRoomData = FetchRoomData(roomdata);
+            return NextResponse.json({ success:true, roomdata:PublicRoomData });
         } else {roomdata.listening = true; throw new Error("Chi is not available");} 
     } catch(error) {
-        return NextResponse.json({ sucess:false, error: 'Error when trying to pon' }, { status:500 });
+        return NextResponse.json({ sucess:false, error: 'Error when trying to chi' }, { status:500 });
     }
 }

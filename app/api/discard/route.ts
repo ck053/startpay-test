@@ -1,4 +1,4 @@
-import { checkWin, checkpon, replay_record, checkkan, checkchi } from "@/app/data/game";
+import { checkWin, checkpon, replay_record, checkkan, checkchi, FetchRoomData } from "@/app/data/game";
 import { MahjongAction } from "@/app/game/components/Board";
 import next from "next/dist/types";
 import { NextRequest, NextResponse } from "next/server";
@@ -42,12 +42,10 @@ export async function POST(req: NextRequest) {
             roomdata.last_discard = discardedTile;
         }
         
-        
-        // TODO: check for bot's actions
-        // TODO: running bot AI
+        // running bot AI
         // initialize the record
         const replay = [];
-        // draw and discard => TODO: check player's actions => loop of 3
+        // draw and discard until stop
         for (let i = roomdata.current_player + 1; i<4; i++) {
             roomdata.current_player = i;
             if (roomdata.wall.length <= 0) {
@@ -58,9 +56,9 @@ export async function POST(req: NextRequest) {
             const bot = roomdata.playerdatalist[i];
             bot.hand.push(card);
             bot.last_drawn = card;
-            // record TODO: remove value for client
-            replay.push({ action:'draw', value:card, player:i });
-            const [discardedTile] = bot.hand.splice(1);
+            // record
+            replay.push({ action:'draw', value:-1, player:i });
+            const discardedTile = bot.hand.pop();
             bot.discard.push(discardedTile);
             bot.last_discard = discardedTile;
             roomdata.last_discard = discardedTile;
@@ -89,13 +87,14 @@ export async function POST(req: NextRequest) {
             }
             if (action.length > 0) {
                 roomdata.listen = true;
-                console.log("Action detected for player:", roomdata.current_player);
-                return NextResponse.json({roomdata: roomdata, action, replay});
+                const PublicRoomData = FetchRoomData(roomdata);
+                return NextResponse.json({roomdata: PublicRoomData, action, replay});
             }
         }
         roomdata.current_player = 0;
         roomdata.listen = true;
-        return NextResponse.json({roomdata: roomdata, action, replay});
+        const PublicRoomData = FetchRoomData(roomdata);
+        return NextResponse.json({roomdata: PublicRoomData, action, replay});
     } catch(error) {
         console.log("Error when handling discard:", error)
         return NextResponse.json({success: false, error: "Error when handling discard:"},{status: 500})

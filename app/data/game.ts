@@ -11,7 +11,7 @@ export interface roomdata {
     current_player: number,
     cards_remain: number,
     last_discard: number,
-    wall: Array<[]>,
+    wall: number[],
     playerdatalist: playerdata[],
     stars: number,
     listen: boolean
@@ -46,8 +46,43 @@ export function sorthand(sort: number[], last_drawn=-1) {
     return sort;
 }
 
+export function FetchRoomData(room: roomdata): roomdata {
+    // Create a new playerdatalist with filtered data
+    const publicPlayerDataList = room.playerdatalist.map((player, index) => {
+        // Player 0 (the current player) sees their own hand and last_drawn
+        if (index === 0) {
+            return {
+                position: player.position,
+                exposed: player.exposed,
+                discard: player.discard,
+                last_drawn: player.last_drawn, // Keep for self
+                name: player.name,
+                hand: [...player.hand], // Keep a copy of their hand
+            };
+        }
+        // Other players only see public info
+        return {
+            position: player.position,
+            exposed: player.exposed,
+            discard: player.discard,
+            last_drawn: -1, // Hide for opponents
+            name: player.name,
+            hand: [], // Hide hand for opponents
+        };
+    });
+
+    return {
+        current_player: room.current_player,
+        cards_remain: room.cards_remain,
+        last_discard: room.last_discard,
+        wall: [], // Hide the wall (private)
+        playerdatalist: publicPlayerDataList,
+        stars: room.stars,
+        listen: room.listen,
+    };
+}
+
 export function initializeRoomData(stars=1) {
-    // TODO: check stars' availability
     // create a playerdatalist
     const playerdatalist: playerdata[] = [];
 
@@ -65,7 +100,6 @@ export function initializeRoomData(stars=1) {
 
     // get a copy of wall and shuffle
     let wall = shuffle(shuffle([...standard_wall]))
-    //TODO: save the initial wall(optional)
     // deal the starting hand
     for (let i = 0; i < 13; i++) {
         for (let j = 0; j<4 ; j++) {
@@ -81,18 +115,19 @@ export function initializeRoomData(stars=1) {
     [0,1,2,3].forEach(i => {
         playerdatalist[i]['hand'] = sorthand(playerdatalist[i]['hand']);
     })
-    playerdatalist[0].hand = [11,12,13,14,15,16,17,18,19,31,33,36,37];
-    // playerdatalist[0].hand = [11,11,11,11,12,12,12,12,13,13,13,13,35];
-    // create roomdata
-    return {
+    const cards_remain = wall.length;
+    const roomdata = {
         current_player: 0,
-        cards_remain: wall.length,
+        cards_remain,
         last_discard: -1,
         wall,
         playerdatalist,
         stars,
         listen: true
     }
+    const PublicRoomData = FetchRoomData(roomdata);
+    // create roomdata
+    return [roomdata, PublicRoomData];
 }
 
 function checkpairs(array: number[]) {

@@ -69,7 +69,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
     const [playerExposedTiles, setPlayerExposedTiles] = useState<ExposedTile[]>([]);
     
     const button_area = useRef<HTMLDivElement>(null);
-
+    const Xbox = useRef<HTMLDivElement>(null);
     const action_text: Record<MahjongAction, string> = {
         'chi': '吃',
         'pon': '碰',
@@ -129,7 +129,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         const newTiles = hand.map((tileValue, index) => ({
           id: index+1, // Use the tile value as ID (or generate a unique one)
           value: tileValue,
-          backgroundImage: `url('Regular/${tileValue}.png')`,
+          backgroundImage: `url('Regular/${tileValue+1000}.png')`,
         }));
         setPlayerTiles(newTiles);
       }, [hand]);
@@ -137,15 +137,15 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
     useEffect(() => {
         const tiles: ExposedTile[] = [];
         let idCounter = 1;
-
-        playerExposedList.forEach((group, groupIndex) => {
+        const reversed_list = playerExposedList.reverse();
+        reversed_list.forEach((group, groupIndex) => {
             group.forEach((value, tileIndexInGroup) => {
                 const isLastInGroup = tileIndexInGroup === group.length - 1;
             
                 tiles.push({
                     id: idCounter++,
                     value,
-                    backgroundImage: `url('Regular/${value}.png')`,
+                    backgroundImage: `url('Regular/${value+2000}.png')`,
                     // Apply margin to the last tile in each group
                     style: isLastInGroup ? { marginRight: '2vh' } : {},
                 });
@@ -257,6 +257,9 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         if (centerboard.current) {
             centerboard.current.style.transform = `translateY(-${up}px)`;
         }
+        if (Xbox.current) {
+            Xbox.current.style.transform = `translateY(-${up}px)`;
+        }
     };
 
     const Close_Choose = () => {
@@ -304,6 +307,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
 
     return (
         <div className="gameboard">
+            <div className="x-box" ref={Xbox}></div>
             <div className="choosing_tile" ref={choosetileRef}>
                 {kan_listTiles.map((tile) => (
                     <div
@@ -335,7 +339,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
                         key={tile.id} 
                         data-tile-id={tile.id}
                         style={{ backgroundImage: tile.backgroundImage }} 
-                        className="tile"
+                        className="large_tile"
                         onClick={() => HandleDiscard(tile.value, tile.id)}
                     ></div>
                 ))}

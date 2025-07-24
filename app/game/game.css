@@ -16,20 +16,23 @@ html, body {
 }
 
 .gameboard {
-  width: 100vw; /* Use viewport width */
-  height: 100vh; /* Use viewport height */
+  width: 100vw;
+  height: 100vh;
+  background-color: #216b2a;
+  border: 2vh solid orange;
   flex: 1; /* Allow the gameboard to fill the remaining space */
   display: flex; /* Use flex for tiles */
   flex-wrap: wrap; /* Allow wrapping of tiles */
   justify-content: center;
   align-items: center;
   position: relative;
+  z-index: 100;
 }
 
 .playerhand {
   width: 70%;
   max-height: 14.9vh;
-  aspect-ratio: 21 / 2;
+  aspect-ratio: 28/3;
   position: absolute;
   bottom: 2%;
   left: 15%;
@@ -39,7 +42,7 @@ html, body {
 
 .playerexposed {
   width: 70%;
-  aspect-ratio: 25 / 2;
+  aspect-ratio: 28/3;
   position: absolute;
   bottom: 2%;
   right: 2%;
@@ -131,6 +134,13 @@ html, body {
   background-repeat: no-repeat;
 }
 
+.large_tile {
+  height:100%;
+  aspect-ratio: 2/3;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 .turned_tile {
 width: 100%;
 aspect-ratio: 4/3;
@@ -157,7 +167,7 @@ flex: 0 0 auto;
 
 .exposed_tile {
   height:100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 2/3;
   background-size: contain;
   background-repeat: no-repeat;
   animation: slideToHandFromLeft 0.5s ease-out forwards;
@@ -262,4 +272,34 @@ flex: 0 0 auto;
 
 .tile-animate {
   animation: slideToHand 0.5s ease-out forwards;
+}
+
+.x-box {
+  width: 50vh;
+  height: 50vh;
+  border: 0.5vh solid darkgreen;
+  position: relative;
+  margin: 20px;
+  box-sizing: border-box; /* Ensures border is included in dimensions */
+  z-index: -11;
+}
+
+.x-box:before, .x-box:after {
+  content: "";
+  position: absolute;
+  width: calc(100% * 1.4142); /* Diagonal length (100% × √2) */
+  height: 0.5vh;
+  background: darkgreen;
+  top: 50%;
+  left: 50%;
+}
+
+.x-box:before {
+  transform: translate(-50%, -50%) rotate(45deg);
+  transform-origin: center center;
+}
+
+.x-box:after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: center center;
 }

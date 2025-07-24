@@ -30,13 +30,13 @@ export async function POST(req: NextRequest) {
     }
     // Logic to create a room and initialize data
     const roomId = generateRoomId(); // Function to generate a unique room ID
-    const roomData = initializeRoomData(starsCount); // Function to initialize room data
+    const [roomData, PublicRoomData] = initializeRoomData(starsCount); // Function to initialize room data
     // Put roomData into roomDatalist
     roomDatalist[roomId] = roomData;
     // remove stars on start
     userdata[userid].balance -= starsCount;
     // Send the room data back to the client
-    return NextResponse.json({ roomId, roomData });
+    return NextResponse.json({ roomId, roomData: PublicRoomData });
 }
 
 function generateRoomId(): string {

@@ -1,4 +1,4 @@
-import { checkpon } from "@/app/data/game";
+import { checkpon, FetchRoomData } from "@/app/data/game";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
             player.exposed.push(exposedTile);
             roomdata.listening = true;
             roomdata.current_player = 0;
-            return NextResponse.json({ success:true, roomdata });
+            const PublicRoomData = FetchRoomData(roomdata);
+            return NextResponse.json({ success:true, roomdata:PublicRoomData });
         } else {roomdata.listening = true; throw new Error("Pon is not available");} 
     } catch(error) {
         return NextResponse.json({ sucess:false, error: 'Error when trying to pon' }, { status:500 });
