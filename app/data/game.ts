@@ -282,7 +282,7 @@ export function checkpon(hand: number[], tile: number): boolean {
     }
     return false; // Tile appears less than twice
 }
-export function checkkan(hand: number[], exposed: number[][] = [], tile: number = -1): number {
+export function checkkan(hand: number[], exposed: number[][] = [], tile: number = -1, ondraw: boolean = true): number {
     if (hand.length === 0) return 0;
 
     // Open Kan logic (when specific tile is provided)
@@ -295,18 +295,20 @@ export function checkkan(hand: number[], exposed: number[][] = [], tile: number 
                 return 2; // Closed Kan found
             }
         }
-        let count = 0;
-        for (const t of hand) {
-            if (t === tile) {
-                count++;
-                if (count >= 3) {
-                    return 1;
+        if (ondraw){
+            let count = 0;
+            for (const t of hand) {
+                if (t === tile) {
+                    count++;
+                    if (count >= 3) {
+                        return 1;
+                    }
                 }
             }
-        }
-        // Added Kan logic (3 in hand + matching exposed Pon)
-        if (exposed.some(set => set.length === 3 && set.every(t => t === tile))) {
-            return 3; // Added Kan possible
+            // Added Kan logic (3 in hand + matching exposed Pon)
+            if (exposed.some(set => set.length === 3 && set.every(t => t === tile))) {
+                return 3; // Added Kan possible
+            }
         }
         return 0;
     }

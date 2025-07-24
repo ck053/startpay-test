@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
         // check for actions
         // check kan
-        if (checkkan(player.hand, player.exposed) && roomdata.wall.length > 0) {
+        if (checkkan(player.hand, player.exposed, -1, true) && roomdata.wall.length > 0) {
             action.push('kan');
         }
         // check win

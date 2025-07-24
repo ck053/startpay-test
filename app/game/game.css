@@ -280,14 +280,14 @@ flex: 0 0 auto;
   border: 0.5vh solid darkgreen;
   position: relative;
   margin: 20px;
-  box-sizing: border-box; /* Ensures border is included in dimensions */
+  box-sizing: border-box;
   z-index: -11;
 }
 
 .x-box:before, .x-box:after {
   content: "";
   position: absolute;
-  width: calc(100% * 1.4142); /* Diagonal length (100% × √2) */
+  width: calc(100% * 1.4142);
   height: 0.5vh;
   background: darkgreen;
   top: 50%;

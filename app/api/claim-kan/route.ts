@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
         if (roomdata.current_player !== 0) {
             console.log("case 1");
             // check if kan available
-            if (checkkan(player.hand, roomdata.last_discard)) {
+            if (checkkan(player.hand, roomdata.last_discard, -1, false)) {
                 // remove card from hand and discard
                 const index = player.hand.indexOf(roomdata.last_discard);
                 const exposedTile = player.hand.splice(index, 3);
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
         // closed kan or add kan
         else {
             // check available
-            const kan_index = checkkan(player.hand, player.exposed, tile);
+            const kan_index = checkkan(player.hand, player.exposed, tile, true);
             const tile_index = player.hand.indexOf(tile);
             switch (kan_index) {
                 // closed kan

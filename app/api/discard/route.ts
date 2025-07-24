@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
                 action.push('pon');
             }
             // check for kan
-            if (checkkan(player.hand, player.exposed, discardedTile) && roomdata.wall.length > 0) {
+            if (checkkan(player.hand, player.exposed, discardedTile, false) && roomdata.wall.length > 0) {
                 action.push('kan');
             }
             // check for win
