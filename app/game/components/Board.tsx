@@ -1,5 +1,6 @@
 import { roomdata } from '@/app/data/game';
 import { useEffect, useState , useRef} from 'react';
+import { Translations } from '@/app/types/en';
 
 // Define the type for a tile
 interface Tile {
@@ -29,9 +30,11 @@ type BoardProps = {
     hand: number[];
     roomData: roomdata;
     actions: MahjongAction[];
+    animation: boolean;
     setHand: React.Dispatch<React.SetStateAction<number[]>>;
     setRoomData: React.Dispatch<React.SetStateAction<roomdata>>;
     setActions: React.Dispatch<React.SetStateAction<MahjongAction[]>>;
+    setAnimation: React.Dispatch<React.SetStateAction<boolean>>;
     onDiscardTile: (tileValue: number, id: number) => Promise<void>;
     handleAction: (action: MahjongAction) => Promise<void>;
     HandleAction: (value: number, type: string, list: number[]) => Promise<void>;
@@ -48,11 +51,12 @@ type BoardProps = {
     choosetileRef: React.RefObject<HTMLDivElement>;
     kan_list: number[][];
     chi_list: number[][];
+    text: Translations;
 };
 
-export type MahjongAction = 'chi' | 'pon' | 'kan' | 'ron' | 'tsumo' | 'skip' | 'end';
+export type MahjongAction = 'chi' | 'pon' | 'kan' | 'ron' | 'tsumo' | 'skip' | 'end' | 'bot_end';
 
-export default function Board({ hand, setHand, roomData, setRoomData, onDiscardTile, actions, setActions, handleAction, HandleAction, centerboard, playerHandRef, oppHandRef, leftHandRef, rightHandRef, owndiscard, oppdiscard, leftdiscard, rightdiscard, playerExposedRef, kan_list, chi_list, choosetileRef}: BoardProps) {
+export default function Board({ hand, setHand, roomData, setRoomData, onDiscardTile, actions, setActions, handleAction, HandleAction, animation, setAnimation, centerboard, playerHandRef, oppHandRef, leftHandRef, rightHandRef, owndiscard, oppdiscard, leftdiscard, rightdiscard, playerExposedRef, kan_list, chi_list, choosetileRef, text }: BoardProps) {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
@@ -70,41 +74,70 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
     
     const button_area = useRef<HTMLDivElement>(null);
     const Xbox = useRef<HTMLDivElement>(null);
+    const play = useRef<HTMLDivElement>(null);
+    const cross = useRef<HTMLDivElement>(null);
     const action_text: Record<MahjongAction, string> = {
-        'chi': '吃',
-        'pon': '碰',
-        'kan': '槓',
-        'ron': '胡',
-        'tsumo': '自摸',
-        'skip': '跳過',
-        'end': ''
+        'chi': text['chi'],
+        'pon': text['pon'],
+        'kan': text['kan'],
+        'ron': text['ron'],
+        'tsumo': text['tsumo'],
+        'skip': text['skip'],
+        'end': '',
+        'bot_end': '',
     }
 
     // Function to update hands
     const updateHands = () => {
         // Generate tiles for opponent (14 tiles)
-        const generatedOpponentTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
-            id: index + 1,
-            value: -1,
-            backgroundImage: `url('Regular/OppBack.png')`, // Adjust the image path as needed
-        }));
-
-        const generatedLeftTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
-            id: index + 1,
-            value: -1,
-            backgroundImage: `url('Regular/LeftBack.png')`, // Adjust the image path as needed
-        }))
+        if (roomData.playerdatalist[2].hand.length == 0){
+            const generatedOpponentTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
+                id: index + 1,
+                value: -1,
+                backgroundImage: `url('Regular/OppBack.png')`, // Adjust the image path as needed
+            }));
+            setOpponentTiles(generatedOpponentTiles);
+        } else {
+            const generatedOpponentTiles: Tile[] = roomData.playerdatalist[2].hand.map((value, index) =>({
+                id: index+1,
+                value,
+                backgroundImage: `url('Regular/${value+300}.png')`,
+            }));
+            setOpponentTiles(generatedOpponentTiles);
+        }
         
-        const generatedRightTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
-            id: index + 1,
-            value: -1,
-            backgroundImage: `url('Regular/RightBack.png')`, // Adjust the image path as needed
-        }));
+        if (roomData.playerdatalist[3].hand.length == 0) {
+            const generatedLeftTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
+                id: index + 1,
+                value: -1,
+                backgroundImage: `url('Regular/LeftBack.png')`, // Adjust the image path as needed
+            }));
+            setLeftTiles(generatedLeftTiles);
+        } else {
+            const generatedLeftTiles: Tile[] = roomData.playerdatalist[3].hand.map((value, index) =>({
+                id: index+1,
+                value,
+                backgroundImage: `url('Regular/${value+100}.png')`,
+            }));
+            setLeftTiles(generatedLeftTiles);
+        }
 
+        if (roomData.playerdatalist[1].hand.length == 0) {
+            const generatedRightTiles: Tile[] = Array.from({ length: 13 }, (_, index) => ({
+                id: index + 1,
+                value: -1,
+                backgroundImage: `url('Regular/RightBack.png')`, // Adjust the image path as needed
+            }));
+            setRightTiles(generatedRightTiles);
+        } else {
+            const generatedRightTiles: Tile[] = roomData.playerdatalist[1].hand.map((value, index) =>({
+                id: index+1,
+                value,
+                backgroundImage: `url('Regular/${value+200}.png')`,
+            }));
+            setRightTiles(generatedRightTiles);
+        }
         // Update state with new tiles
-        setOpponentTiles(generatedOpponentTiles);
-        setLeftTiles(generatedLeftTiles);
-        setRightTiles(generatedRightTiles);
     };
 
     // Function to handle discard
@@ -183,6 +216,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
 
     useEffect(() => {
         discardboardupdate();
+        updateHands();
     },[roomData]);
 
     useEffect(() => {
@@ -215,7 +249,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         
             // Add click handler
             button.onclick = () => handleAction(action);
-        
+            
             button_area.current?.appendChild(button);
         });
 
@@ -223,7 +257,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         const skipButton = document.createElement('button');
         skipButton.className = 'action-button';
         skipButton.id = 'skip-button';
-        skipButton.textContent = '跳過';
+        skipButton.textContent = action_text.skip;
         skipButton.onclick = () => handleAction('skip');
         button_area.current?.appendChild(skipButton);
     }, [actions])
@@ -305,8 +339,27 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         setKan_listTiles(newTiles);
       };
 
+    const ToggleAnimation = () => {
+        setAnimation(!animation);
+        if (!animation) {
+            if (play.current && cross.current) {
+                play.current.style.display = '';
+                cross.current.style.display = 'none';
+            }
+        } else {
+            if (play.current && cross.current) {
+                play.current.style.display = 'none';
+                cross.current.style.display = '';
+            }
+        }
+    }
+
     return (
         <div className="gameboard">
+            <button id="animation-toggle" title="Toggle Animations" onClick={() => ToggleAnimation()}>
+                <div className="play" ref={play}></div>
+                <div className="cross" ref={cross} style={{ display: 'none' }}></div>
+            </button>
             <div className="x-box" ref={Xbox}></div>
             <div className="choosing_tile" ref={choosetileRef}>
                 {kan_listTiles.map((tile) => (

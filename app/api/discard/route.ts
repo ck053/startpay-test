@@ -50,12 +50,29 @@ export async function POST(req: NextRequest) {
             roomdata.current_player = i;
             if (roomdata.wall.length <= 0) {
                 action.push('end');
-                return NextResponse.json({roomdata: roomdata, action, replay});
+                const PublicRoomData = FetchRoomData(roomdata);
+                return NextResponse.json({roomdata: PublicRoomData, action, replay});
             }
-            const card = roomdata.wall.pop();
+            // check if bot win
             const bot = roomdata.playerdatalist[i];
-            bot.hand.push(card);
-            bot.last_drawn = card;
+            if (roomdata.cards_remain < (84 - roomdata.round * 4) && i == roomdata.position) {
+                const card = roomdata.wall.shift();
+                bot.hand.push(card);
+                bot.last_drawn = card;
+                roomdata.cards_remain -= 1;
+                replay.push({ action:'draw', value:-1, player:i });
+                // trigger bot win
+                action.push('bot_end');
+                const PublicRoomData = FetchRoomData(roomdata);
+                replay.push({ action:'bot_win', value:card, player:i });
+                PublicRoomData.playerdatalist[i].hand = bot.hand;
+                return NextResponse.json({roomdata: PublicRoomData, action, replay});
+            } else {
+                const card = roomdata.wall.pop();
+                bot.hand.push(card);
+                bot.last_drawn = card;
+                roomdata.cards_remain -= 1;
+            }            
             // record
             replay.push({ action:'draw', value:-1, player:i });
             const discardedTile = bot.hand.pop();

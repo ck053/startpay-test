@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
         const card = roomdata['wall'].pop();
         player.hand.push(card);
         player.last_drawn = card;
+        roomdata.cards_remain -= 1;
 
         // check for actions
         // check kan

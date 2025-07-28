@@ -6,6 +6,12 @@ import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';
 import ShowBalance from '@/app/components/ShowBalance';
 import Board from './game/components/Board';
+import Winpage from '@/pages/win';
+import Gameoverpage from '@/pages/gameover';
+import en from '../app/types/en';
+type Translations = typeof en;
+import zh from '../app/types/zh';
+import ja from '../app/types/ja';
 import '@/app/game/game.css';
 import { roomdata, sorthand, replay_record, getPossibleKan, checkchi } from './data/game';
 import { MahjongAction } from './game/components/Board'
@@ -60,15 +66,26 @@ export default function Home() {
         }
       ],
       stars: 0,
-      listen: false
+      listen: false,
+      round: -1,
+      position: -1
     }
   );
+  const resources = {
+    en,
+    zh,
+    ja
+  } as const;
   const [roomId, setRoomId] = useState<string>('');
   const [actions, setActions] = useState<MahjongAction[]>([]);
   const [balance, setBalance] = useState<number>(-1);
   const [starsCount, setStarsCount] = useState(1);
   const [kan_list, setKan_list] = useState<number[][]>([]);
   const [chi_list, setChi_list] = useState<number[][]>([]);
+  const [WinDisplay, setWinDisplay] = useState<boolean>(false);
+  const [GameOverDisplay, setGameOverDisplay] = useState<boolean>(false);
+  const [animation, setAnimation] = useState<boolean>(true);
+  const [language, setLanguage] = useState<string>('en');
   const centerboard = useRef<HTMLDivElement>(null);
   const playerHandRef = useRef<HTMLDivElement>(null);
   const leftHandRef = useRef<HTMLDivElement>(null);
@@ -80,6 +97,8 @@ export default function Home() {
   const rightdiscard = useRef<HTMLDivElement>(null);
   const playerExposedRef = useRef<HTMLDivElement>(null);
   const choosetileRef = useRef<HTMLDivElement>(null);
+  const winpagebody = useRef<HTMLDivElement>(null);
+  const gameoverpagebody = useRef<HTMLDivElement>(null);
 
   const fetchBalance = async (userid: string) => {
     try {
@@ -104,7 +123,17 @@ export default function Home() {
       try {
         // Dynamic import of the TWA SDK
         const WebApp = (await import('@twa-dev/sdk')).default;
-        
+        console.log(navigator.language);
+        const detectLanguage = () => {
+          const language = WebApp.initDataUnsafe.user?.language_code;
+          if (language) {
+            const langCode = language.split('-')[0];
+            return Object.keys(resources).includes(langCode) ? langCode : 'en';
+          }
+            return navigator.language.split('-')[0] || 'en';
+        };
+          
+        setLanguage(detectLanguage());
         // Check if running within Telegram
         const isTelegram = WebApp.isExpanded !== undefined;
         
@@ -162,16 +191,17 @@ export default function Home() {
     return <ErrorState error={error} onRetry={handleRetry} />;
   }
 
-  function navigateTo(path: string) {
+  function navigateTo(path: string, hide:boolean = true) {
     // Hide all pages
-    document.querySelectorAll<HTMLElement>('.page').forEach(page => {
-      page.style.display = 'none';
-    });
-    
+    if (hide) {
+      document.querySelectorAll<HTMLElement>('.page').forEach(page => {
+        page.style.display = 'none';
+      });
+    }
     // Show the requested page
     const element = document.getElementById(path);
     if (element) {
-      element.style.display = 'block';
+      element.style.display = 'flex';
     }
     // Update browser history (optional)
     history.pushState({}, '', `#${path}`);
@@ -227,7 +257,6 @@ export default function Home() {
         }
 
         const { action, new_tile } = await ready.json();
-        console.log('New tile:', new_tile);
 
         // update player hand
         roomData.playerdatalist[0].hand.push(new_tile);
@@ -258,7 +287,7 @@ export default function Home() {
         y: rect.top + rect.height / 2
     };
   };
-  
+  //TODO: bot winning animation
   async function animateAction(action: replay_record, temp_hand: number[], id: number): Promise<void> {
     if(action.action == 'draw'){
         if (!centerboard.current) return;
@@ -400,7 +429,6 @@ export default function Home() {
     for (const action of replay) {
       await animateAction(action, temp_hand, id); // Wait for each animation to finish
     }
-    console.log("All animations completed!");
   }
 
   // Handle discard
@@ -422,15 +450,24 @@ export default function Home() {
       // run animation by replay
       const { roomdata, action: discard_action, replay} = await response.json()
       if (!skip) replay.unshift({action: 'discard', value: tile, player: 0});
-      console.log('Replay:', replay);
       const hand_played = [...roomdata.playerdatalist[0].hand];
-      await animateAllActions(replay, hand_played, id);
+      if (animation) {await animateAllActions(replay, hand_played, id);}
       if (discard_action.includes('end')) {
-        // trigger end game
-        console.log("end triggered")
         // navigateTo('game_over')
+        setGameOverDisplay(true);
         fetchBalance(userid);
-        await navigateTo('game_over');
+        await navigateTo('gameover', false);
+        return;
+      }
+      if (discard_action.includes('bot_end')) {
+        // navigateTo('game_over')
+        setGameOverDisplay(true);
+        fetchBalance(userid);
+        while (document.querySelector('#HandtoRemove')){
+          document.querySelector('#HandtoRemove')?.remove();
+        }
+        setRoomData(roomdata);
+        await navigateTo('gameover', false);
         return;
       }
       // update player hand & discard
@@ -448,7 +485,6 @@ export default function Home() {
       }
       // Ask for a draw if it's player's turn
       if (roomdata.current_player == 0) {
-        console.log("Asking for deal:", roomData);
         const ready = await fetch( '/api/deal', {
           method: 'POST',
           headers: {
@@ -463,11 +499,10 @@ export default function Home() {
   
         const { action:draw_action , new_tile } = await ready.json();
         if (draw_action.includes('end')) {
-          // trigger end game
-          console.log("end triggered")
           // navigateTo('game_over')
+          setGameOverDisplay(true);
           fetchBalance(userid);
-          await navigateTo('game_over');
+          await navigateTo('gameover');
           return;
         }
         
@@ -475,7 +510,6 @@ export default function Home() {
         setRoomData(roomdata);
         // update player hand
         player.hand.push(new_tile);
-        console.log("new player hand:", player.hand)
         setHand([...player.hand]);
         // update actions
         setActions(draw_action);
@@ -626,7 +660,9 @@ export default function Home() {
           });
           if (!ron_response.ok) { console.log("Server rejected ron"); return; }
           fetchBalance(userid);
-          navigateTo('win');
+          setWinDisplay(true);
+          setActions([]);
+          navigateTo('win', false);
           return;
         case 'tsumo':
           // confirm the win
@@ -639,7 +675,9 @@ export default function Home() {
           });
           if (!tsumo_response.ok) { console.log("Server rejected tsumo"); return; }
           fetchBalance(userid);
-          navigateTo('win');
+          setWinDisplay(true);
+          setActions([]);
+          navigateTo('win', false);
           return;
         case 'skip':
           // send skip action to server
@@ -733,20 +771,20 @@ export default function Home() {
   return (
     <div className="">
       <div id='home' className='page' style={{zIndex: '1'}}>
-        <ShowBalance balance={balance}/>
+        <ShowBalance balance={balance} text={resources[language].star_number}/>
         <h1>Hi {username}!</h1>
-        <h1>Welcome to Our Site</h1>
+        <h1>{resources[language].welcome}</h1>
         <div className="stars-selector">
-          <span className="stars-label"> Stars to play: </span>
+          <span className="stars-label"> { resources[language].stars } </span>
           <button className="stars-button minus" id="decreaseStars" onClick={() => adjuststars(-1)}>-</button>
           <span className="stars-count" id="starsCount" > {starsCount} ⭐</span>
           <button className="stars-button plus" id="increaseStars" onClick={() => adjuststars(1)}>+</button>
         </div>
         <button onClick={() => handleStartGame('game') } className='button'>
-          Go to Game Page
+          {resources[language].play}
         </button>
       </div>
-      <div id='game' className='page' style={{display: 'none', zIndex: '0'}}>
+      <div id='game' className='page' style={{display: 'none'}}>
         <Board 
           hand={hand} 
           setHand={setHand}
@@ -779,25 +817,27 @@ export default function Home() {
           choosetileRef={choosetileRef}
           kan_list={kan_list}
           chi_list={chi_list}
+          animation={animation}
+          setAnimation={setAnimation}
+          text={resources[language]}
           />
       </div>
-      <div id='game_over' className='page' style={{display: 'none', zIndex: '0'}}>
-        <h1> Game Over </h1>
-        <button onClick={() => handleStartGame('game')} className='button'>
-          Play Again
-        </button>
-        <button onClick={() => navigateTo('home')} className='button'>
-          Go Home
-        </button>
+      <div id='win' className='page' style={{display: 'none', zIndex: '0', position: 'relative'}} ref={winpagebody}>
+        <Winpage
+          navigateTo={navigateTo}
+          balance={balance}
+          winpagebody={winpagebody}
+          WinDisplay={WinDisplay}
+          setWinDisplay={setWinDisplay}
+        />
       </div>
-      <div id='win' className='page' style={{display: 'none', zIndex: '0'}}>
-        <h1> You Win! </h1>
-        <button onClick={() => handleStartGame('game')} className='button'>
-          Play Again
-        </button>
-        <button onClick={() => navigateTo('home')} className='button'>
-          Go Home
-        </button>
+      <div id='gameover' className='page' style={{ display: 'none', zIndex: '0', position: 'relative' }} ref={gameoverpagebody}>
+        <Gameoverpage
+          gameoverpagebody={gameoverpagebody}
+          navigateTo={navigateTo}
+          GameOverDisplay={GameOverDisplay}
+          setGameOverDisplay={setGameOverDisplay}
+        />
       </div>
     </div>
   );

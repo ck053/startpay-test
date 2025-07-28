@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
         const player = roomdata.playerdatalist[0];
         // open kan
         if (roomdata.current_player !== 0) {
-            console.log("case 1");
             // check if kan available
             if (checkkan(player.hand, roomdata.last_discard, -1, false)) {
                 // remove card from hand and discard
@@ -40,7 +39,6 @@ export async function POST(req: NextRequest) {
             switch (kan_index) {
                 // closed kan
                 case 2:
-                    console.log("case 2");
                     // remove 4 tile from hand
                     const closed_exposedTile = player.hand.splice(tile_index, 4);
                     player.exposed.push(closed_exposedTile);
@@ -49,7 +47,6 @@ export async function POST(req: NextRequest) {
                     return NextResponse.json({ success:true, roomdata:PublicRoomData });
                 // add kan
                 case 3:
-                    console.log("case 3");
                     //remove drawn tile
                     let pon_finded = false;
                     const [add_exposedTile] = player.hand.splice(tile_index, 1);

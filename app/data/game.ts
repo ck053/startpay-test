@@ -14,10 +14,11 @@ export interface roomdata {
     wall: number[],
     playerdatalist: playerdata[],
     stars: number,
-    listen: boolean
+    listen: boolean,
+    round: number,
+    position: number,
 }
 const standard_wall = [11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 31, 31, 31, 31, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58, 59, 59, 59, 59, 65, 65, 65, 65, 69, 69, 69, 69, 73, 73, 73, 73, 77, 77, 77, 77, 81, 81, 81, 81, 85, 85, 85, 85, 89, 89, 89, 89];
-const test_wall = [11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19]
 
 type valid_actions = 'draw' | 'discard';
 export interface replay_record {
@@ -79,6 +80,8 @@ export function FetchRoomData(room: roomdata): roomdata {
         playerdatalist: publicPlayerDataList,
         stars: room.stars,
         listen: room.listen,
+        round: 12,
+        position: 1,
     };
 }
 
@@ -114,7 +117,7 @@ export function initializeRoomData(stars=1) {
     // sort the hands
     [0,1,2,3].forEach(i => {
         playerdatalist[i]['hand'] = sorthand(playerdatalist[i]['hand']);
-    })
+    });
     const cards_remain = wall.length;
     const roomdata = {
         current_player: 0,
@@ -123,8 +126,10 @@ export function initializeRoomData(stars=1) {
         wall,
         playerdatalist,
         stars,
-        listen: true
-    }
+        listen: true,
+        round: -1,
+        position: -1,
+    };
     const PublicRoomData = FetchRoomData(roomdata);
     // create roomdata
     return [roomdata, PublicRoomData];

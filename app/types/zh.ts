@@ -1,0 +1,13 @@
+export default {
+    welcome: "欢迎！",
+    play: "开始游戏",
+    settings: "设置",
+    stars: "下注星星数量：",
+    star_number: "星星数量：",
+    chi: '吃',
+    pon: '碰',
+    kan: '杠',
+    ron: '胡',
+    tsumo: '自摸',
+    skip: '跳过',
+  };

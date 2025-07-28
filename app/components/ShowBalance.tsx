@@ -1,7 +1,7 @@
 // components/ShowBalance.tsx
 import Link from 'next/link';
 
-export default function ShowBalance({ balance }: { balance: number }) {
+export default function ShowBalance({ balance, text }: { balance: number, text:string }) {
   return (
     <Link href="/purchase">
       <button style={{
@@ -13,7 +13,7 @@ export default function ShowBalance({ balance }: { balance: number }) {
         borderRadius: '5px',
         cursor: 'pointer'
       }}>
-        Balance: {balance} ⭐
+        {text} {balance} ⭐
       </button>
     </Link>
   );
