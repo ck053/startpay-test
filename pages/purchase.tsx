@@ -13,6 +13,15 @@ import PurchaseSuccessModal from '@/app/components/PurchaseSuccessModal';
 import RefundInstructionsModal from '@/app/components/RefundInstructionsModal';
 import ShowBalance from '@/app/components/ShowBalance';
 import BackButton from '@/app/components/BackButton';
+import en from '../app/types/en';
+type Translations = typeof en;
+import zh from '../app/types/zh';
+import ja from '../app/types/ja';
+const resources = {
+  en,
+  zh,
+  ja
+} as const;
 
 export default function Home() {
   const [initialized, setInitialized] = useState(false);
@@ -26,6 +35,7 @@ export default function Home() {
   }>({ type: null });
   const [username, setUsername] = useState<string>('');
   const [balance, setBalance] = useState<number>(-1);
+  const [language, setLanguage] = useState<string>('en');
 
   const fetchBalance = async (userid: string) => {
     try {
@@ -50,6 +60,16 @@ export default function Home() {
       try {
         // Dynamic import of the TWA SDK
         const WebApp = (await import('@twa-dev/sdk')).default;
+        const detectLanguage = () => {
+          const language = WebApp.initDataUnsafe.user?.language_code;
+          if (language) {
+            const langCode = language.split('-')[0];
+            return Object.keys(resources).includes(langCode) ? langCode : 'en';
+          }
+            return navigator.language.split('-')[0] || 'en';
+        };
+          
+        setLanguage(detectLanguage());
         
         // Check if running within Telegram
         const isTelegram = WebApp.isExpanded !== undefined;
@@ -277,7 +297,9 @@ export default function Home() {
           onClose={handleCloseModal}
         />
       )}
-      <ShowBalance balance={balance}/>
+      <ShowBalance balance={balance} 
+      //@ts-ignore
+      text={resources[language].star_number}/>
       <BackButton />
       <h1 className="text-2xl font-bold mb-6 text-center">Digital Store</h1>
       

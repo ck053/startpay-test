@@ -771,17 +771,23 @@ export default function Home() {
   return (
     <div className="">
       <div id='home' className='page' style={{zIndex: '1'}}>
-        <ShowBalance balance={balance} text={resources[language].star_number}/>
+        <ShowBalance 
+        balance={balance} 
+        //@ts-ignore 
+        text={resources[language].star_number}/>
         <h1>Hi {username}!</h1>
-        <h1>{resources[language].welcome}</h1>
+        <h1>{//@ts-ignore 
+        resources[language].welcome}</h1>
         <div className="stars-selector">
-          <span className="stars-label"> { resources[language].stars } </span>
+          <span className="stars-label"> { //@ts-ignore 
+          resources[language].stars } </span>
           <button className="stars-button minus" id="decreaseStars" onClick={() => adjuststars(-1)}>-</button>
           <span className="stars-count" id="starsCount" > {starsCount} ⭐</span>
           <button className="stars-button plus" id="increaseStars" onClick={() => adjuststars(1)}>+</button>
         </div>
         <button onClick={() => handleStartGame('game') } className='button'>
-          {resources[language].play}
+          {//@ts-ignore
+          resources[language].play}
         </button>
       </div>
       <div id='game' className='page' style={{display: 'none'}}>
@@ -819,6 +825,7 @@ export default function Home() {
           chi_list={chi_list}
           animation={animation}
           setAnimation={setAnimation}
+          //@ts-ignore
           text={resources[language]}
           />
       </div>
@@ -826,6 +833,7 @@ export default function Home() {
         <Winpage
           navigateTo={navigateTo}
           balance={balance}
+          //@ts-ignore
           winpagebody={winpagebody}
           WinDisplay={WinDisplay}
           setWinDisplay={setWinDisplay}
@@ -833,6 +841,7 @@ export default function Home() {
       </div>
       <div id='gameover' className='page' style={{ display: 'none', zIndex: '0', position: 'relative' }} ref={gameoverpagebody}>
         <Gameoverpage
+          //@ts-ignore
           gameoverpagebody={gameoverpagebody}
           navigateTo={navigateTo}
           GameOverDisplay={GameOverDisplay}
