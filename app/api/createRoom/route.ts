@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeRoomData } from "@/app/data/game";
+import { useImperativeHandle } from "react";
 
 // @ts-ignore
 if (!global.roomDatalist) {
     // @ts-ignore
     global.roomDatalist = {};
-  }
+}
+
+// @ts-ignore
+if (!global.userdata) {
+    // @ts-ignore
+    global.userdata = {};
+}
   
 // @ts-ignore
 const roomDatalist = global.roomDatalist;
@@ -81,16 +88,19 @@ function generateWinningHand(wall: number[]) {
 
 // Define the POST method handler
 export async function POST(req: NextRequest) {
-    const { userid, starsCount } = await req.json();
+    const { userid, star_to_play } = await req.json();
     // check if user valid
     if (!userdata[userid]) {
-        return NextResponse.json(
-            { success: false, error: "Invalid user ID"},
-            { status: 400 }
-        );
+        //return NextResponse.json(
+        //    { success: false, error: "Invalid user ID"},
+        //    { status: 400 }
+        //);
+        userdata[userid] = {
+            balance: 100
+        }
     }
     const playerstars = userdata[userid].balance;
-    if (playerstars < starsCount || starsCount < 0) {
+    if (playerstars < star_to_play || star_to_play < 0) {
         return NextResponse.json(
             { success: false, error: "Invalid stars"},
             { status: 400 }
@@ -98,10 +108,10 @@ export async function POST(req: NextRequest) {
     }
     // Logic to create a room and initialize data
     const roomId = generateRoomId(); // Function to generate a unique room ID
-    const [roomData, PublicRoomData] = initializeRoomData(starsCount); // Function to initialize room data
+    const [roomData, PublicRoomData] = initializeRoomData(star_to_play); // Function to initialize room data
     // generate bot winning round
     // TODO: Add winning round setting
-    const Avg_win_round = getNormalRandom(12, 2)
+    const Avg_win_round = getNormalRandom(10,3);
     roomData.round = Avg_win_round;
     // generate winning bot
     const randomInt = Math.floor(Math.random() * 3) + 1;
@@ -118,7 +128,7 @@ export async function POST(req: NextRequest) {
     console.log(roomData);
     roomDatalist[roomId] = roomData;
     // remove stars on start
-    userdata[userid].balance -= starsCount;
+    userdata[userid].balance -= star_to_play;
     // Send the room data back to the client
     return NextResponse.json({ roomId, roomData: PublicRoomData });
 }

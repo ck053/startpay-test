@@ -289,53 +289,55 @@ export function checkpon(hand: number[], tile: number): boolean {
 }
 export function checkkan(hand: number[], exposed: number[][] = [], tile: number = -1, ondraw: boolean = true): number {
     if (hand.length === 0) return 0;
-
-    // Open Kan logic (when specific tile is provided)
-    if (tile !== -1) {
-        // Closed Kan logic (check all possible 4-of-a-kinds in hand)
-        const tileCounts: Record<number, number> = {};
+    // if not ondraw check open kan only
+    if (!ondraw) {
+        let count = 0;
         for (const t of hand) {
-            tileCounts[t] = (tileCounts[t] || 0) + 1;
-            if (tileCounts[t] === 4 && t == tile) {
-                return 2; // Closed Kan found
-            }
-        }
-        if (ondraw){
-            let count = 0;
-            for (const t of hand) {
-                if (t === tile) {
-                    count++;
-                    if (count >= 3) {
-                        return 1;
-                    }
+            if (t === tile) {
+                count++;
+                if (count >= 3) {
+                    return 1;
                 }
-            }
-            // Added Kan logic (3 in hand + matching exposed Pon)
-            if (exposed.some(set => set.length === 3 && set.every(t => t === tile))) {
-                return 3; // Added Kan possible
             }
         }
         return 0;
     }
+    // else check closed kan and add kan
+    else {
+        // tile provided
+        if (tile !== -1) {
+            // Closed Kan logic (check all possible 4-of-a-kinds in hand)
+            const count = hand.filter(card => card == tile).length;
+            if (count == 4) {
+                return 2;
+            }
+            // Added Kan logic (3 in hand + matching exposed Pon)
+            if (exposed.length > 0) {
+                if (exposed.some(set => set.length === 3 && set.every(t => t === tile))) {
+                    return 3; // Added Kan possible
+                }
+            }
+            return 0;
+        } else {
+            // Closed Kan logic (check all possible 4-of-a-kinds in hand)
+            const tileCounts: Record<number, number> = {};
+            for (const t of hand) {
+                tileCounts[t] = (tileCounts[t] || 0) + 1;
+                if (tileCounts[t] === 4) {
+                    return 2; // Closed Kan found
+                }
+            }
 
-    // Closed Kan logic (check all possible 4-of-a-kinds in hand)
-    const tileCounts: Record<number, number> = {};
-    for (const t of hand) {
-        tileCounts[t] = (tileCounts[t] || 0) + 1;
-        if (tileCounts[t] === 4) {
-            return 2; // Closed Kan found
+            // Added Kan logic (3 in hand + matching exposed Pon)
+            const uniqueTiles = [...new Set(hand)]; // Check each tile type only once
+            for (const tile of uniqueTiles) {
+                if (exposed.some(set => set.length === 3 && set.every(t => t === tile))) {
+                    return 3; // Added Kan possible
+                }
+            }
+            return 0;
         }
     }
-
-    // Added Kan logic (3 in hand + matching exposed Pon)
-    const uniqueTiles = [...new Set(hand)]; // Check each tile type only once
-    for (const tile of uniqueTiles) {
-        if (exposed.some(set => set.length === 3 && set.every(t => t === tile))) {
-            return 3; // Added Kan possible
-        }
-    }
-
-    return 0; // No Kan found
 }
 
 export function getPossibleKan(hand: number[], exposed: number[][] = []): number[][] {

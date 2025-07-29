@@ -10,4 +10,7 @@ export default {
     ron: 'ロン',
     tsumo: 'ツモ',
     skip: 'スキップ',
+    setting: 'ゲーム設定',
+    language: '言語:',
+    savesetting: '保存',
   };

@@ -41,8 +41,14 @@ export async function POST(req: NextRequest) {
     if (!global.userdata[userId]) {
         // @ts-ignore
         global.userdata[userId] = {
-        balance: 0, // Default balance
+        balance: 100, // Default balance
       };
+    }
+
+    // @ts-ignore
+    else if (!global.userdata[userId].balance) {
+      // @ts-ignore
+      global.userdata[userId].balance = 0;
     }
 
     // Return the user's balance

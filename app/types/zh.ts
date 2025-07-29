@@ -10,4 +10,7 @@ export default {
     ron: '胡',
     tsumo: '自摸',
     skip: '跳过',
+    setting: '游戏设置',
+    language: '语言:',
+    savesetting: '保存',
   };

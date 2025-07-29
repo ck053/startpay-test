@@ -10,6 +10,9 @@ const en = {
     ron: 'Hu',
     tsumo: 'Tsumo',
     skip: 'Skip',
+    setting: 'Game Setting',
+    language: 'Language:',
+    savesetting: 'Save Setting',
 };
 
 export type TranslationKeys = keyof typeof en;

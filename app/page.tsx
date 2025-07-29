@@ -99,6 +99,9 @@ export default function Home() {
   const choosetileRef = useRef<HTMLDivElement>(null);
   const winpagebody = useRef<HTMLDivElement>(null);
   const gameoverpagebody = useRef<HTMLDivElement>(null);
+  const setting = useRef<HTMLDivElement>(null);
+  const selectlanguage = useRef<HTMLSelectElement>(null);
+  const starvalue = useRef<HTMLInputElement>(null);
 
   const fetchBalance = async (userid: string) => {
     try {
@@ -107,6 +110,7 @@ export default function Home() {
         body: userid
       });
       const data = await response.json();
+      console.log("data:", data);
       if (data.success) {
         setBalance(data.balance);
       } else {
@@ -125,6 +129,7 @@ export default function Home() {
         const WebApp = (await import('@twa-dev/sdk')).default;
         console.log(navigator.language);
         const detectLanguage = () => {
+          // return "zh";
           const language = WebApp.initDataUnsafe.user?.language_code;
           if (language) {
             const langCode = language.split('-')[0];
@@ -221,12 +226,13 @@ export default function Home() {
   // Handle start game request
   const handleStartGame = async (path: string) => {
     try {
+        const star_to_play = Number(starvalue.current?.value);
         const response = await fetch('/api/createRoom', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userid, starsCount })
+            body: JSON.stringify({ userid, star_to_play })
         });
 
         if (!response.ok) {
@@ -456,6 +462,7 @@ export default function Home() {
         // navigateTo('game_over')
         setGameOverDisplay(true);
         fetchBalance(userid);
+        setHand(roomdata.playerdatalist[0].hand);
         await navigateTo('gameover', false);
         return;
       }
@@ -467,6 +474,7 @@ export default function Home() {
           document.querySelector('#HandtoRemove')?.remove();
         }
         setRoomData(roomdata);
+        setHand(roomdata.playerdatalist[0].hand);
         await navigateTo('gameover', false);
         return;
       }
@@ -614,6 +622,7 @@ export default function Home() {
                 }
                 return;
               } else {
+                console.log("claim kan:", kan_list);
                 const kan_response = await fetch( '/api/claim-kan', {
                   method: 'POST',
                   headers: {
@@ -768,22 +777,67 @@ export default function Home() {
     }
   };
 
+  const settingvanish = (vanish:boolean) => {
+    if (vanish) {
+      if (setting.current)
+      setting.current.style.display = 'none';
+    } else {
+      if (setting.current)
+      setting.current.style.display = 'flex';
+      if (selectlanguage.current)
+      selectlanguage.current.value = language;
+      console.log("balance:",balance);
+    }
+  }
+
+  const savesetting = () => {
+    if (setting.current)
+    setting.current.style.display = 'none';
+    if (selectlanguage.current)
+    setLanguage(selectlanguage.current.value);
+  }
+
   return (
     <div className="">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></link>
       <div id='home' className='page' style={{zIndex: '1'}}>
         <ShowBalance 
         balance={balance} 
         //@ts-ignore 
         text={resources[language].star_number}/>
+        <button className='setting-btn' onClick={() => settingvanish(false)}>
+          <i className="fas fa-cog"></i>
+        </button>
+        <div className='setting' ref={setting}>
+          <div className='setting-container'>
+            <span className='close-btn' onClick={() => settingvanish(true)}>&times;</span>
+            <h2>{ //@ts-ignore
+              resources[language].setting
+            }</h2>
+            <div className='setting-option'>
+              <label htmlFor='language'>{ //@ts-ignore
+              resources[language].language}</label>
+              <select id='language' name='language' ref={selectlanguage}>
+                <option value={"en"}> English </option>
+                <option value={"zh"}> 中文 </option>
+                <option value={"ja"}> 日本語 </option>
+              </select>
+            </div>
+            <button id="save-settings" className="save-btn" onClick={() => savesetting()}>{ //@ts-ignore
+            resources[language].savesetting}</button>
+          </div>
+        </div>
         <h1>Hi {username}!</h1>
         <h1>{//@ts-ignore 
         resources[language].welcome}</h1>
         <div className="stars-selector">
           <span className="stars-label"> { //@ts-ignore 
           resources[language].stars } </span>
+          {/*
           <button className="stars-button minus" id="decreaseStars" onClick={() => adjuststars(-1)}>-</button>
           <span className="stars-count" id="starsCount" > {starsCount} ⭐</span>
-          <button className="stars-button plus" id="increaseStars" onClick={() => adjuststars(1)}>+</button>
+          <button className="stars-button plus" id="increaseStars" onClick={() => adjuststars(1)}>+</button>*/}
+          <input type='text' className='fancy-textbox' placeholder='1-1000' ref={starvalue}></input>⭐
         </div>
         <button onClick={() => handleStartGame('game') } className='button'>
           {//@ts-ignore

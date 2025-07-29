@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         // open kan
         if (roomdata.current_player !== 0) {
             // check if kan available
-            if (checkkan(player.hand, roomdata.last_discard, -1, false)) {
+            if (checkkan(player.hand, [], roomdata.last_discard, false)) {
                 // remove card from hand and discard
                 const index = player.hand.indexOf(roomdata.last_discard);
                 const exposedTile = player.hand.splice(index, 3);
