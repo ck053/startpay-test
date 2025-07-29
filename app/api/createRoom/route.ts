@@ -7,13 +7,6 @@ if (!global.roomDatalist) {
     // @ts-ignore
     global.roomDatalist = {};
 }
-
-// @ts-ignore
-if (!global.userdata) {
-    // @ts-ignore
-    global.userdata = {};
-}
-  
 // @ts-ignore
 const roomDatalist = global.roomDatalist;
 // @ts-ignore
@@ -91,13 +84,10 @@ export async function POST(req: NextRequest) {
     const { userid, star_to_play } = await req.json();
     // check if user valid
     if (!userdata[userid]) {
-        //return NextResponse.json(
-        //    { success: false, error: "Invalid user ID"},
-        //    { status: 400 }
-        //);
-        userdata[userid] = {
-            balance: 100
-        }
+        return NextResponse.json(
+            { success: false, error: "Invalid user ID"},
+            { status: 400 }
+        );
     }
     const playerstars = userdata[userid].balance;
     if (playerstars < star_to_play || star_to_play < 0) {
