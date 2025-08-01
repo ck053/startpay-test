@@ -9,8 +9,6 @@ import LoadingState from '@/app/components/LoadingState';
 import ErrorState from '@/app/components/ErrorState';
 import ItemsList from '@/app/components/ItemsList';
 import PurchaseHistory from '@/app/components/PurchaseHistory';
-import PurchaseSuccessModal from '@/app/components/PurchaseSuccessModal';
-import RefundInstructionsModal from '@/app/components/RefundInstructionsModal';
 import ShowBalance from '@/app/components/ShowBalance';
 import BackButton from '@/app/components/BackButton';
 import en from '../app/types/en';
