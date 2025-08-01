@@ -8,11 +8,16 @@
     "Start": "next start",
     "lint": "next lint",
     "bot": "node bot.js",
-    "start": "concurrently \"npm run Start\" \"npm run bot\""
+    "start": "concurrently \"npm run Start\" \"npm run bot\"",
+    "webhook:setup": "tsx scripts/setup-webhook.ts",
+    "webhook:info": "tsx scripts/webhook-info.ts",
+    "webhook:delete": "tsx scripts/delete-webhook.ts",
+    "bot:setup": "npm run webhook:setup"
   },
   "dependencies": {
     "@twa-dev/sdk": "^8.0.2",
     "dotenv": "^17.2.1",
+    "express": "^5.1.0",
     "gsap": "^3.13.0",
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.0",

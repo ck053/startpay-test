@@ -106,6 +106,7 @@ export default function Home() {
   const selectlanguage = useRef<HTMLSelectElement>(null);
   const starvalue = useRef<HTMLInputElement>(null);
   const selectspeed = useRef<HTMLSelectElement>(null);
+  const background_music = useRef<HTMLAudioElement>(null);
 
   const fetchBalance = async (userid: string) => {
     try {
@@ -226,6 +227,8 @@ export default function Home() {
         page.style.display = 'none';
       });
     }
+    if (path !== 'gameover' && path !== 'win')
+    background_music.current?.pause();
     // Show the requested page
     const element = document.getElementById(path);
     if (element) {
@@ -289,6 +292,10 @@ export default function Home() {
             setRoomId(roomId);
             // show game page
             await navigateTo('game');
+            if (background_music.current) {
+              background_music.current.currentTime = 0;
+              background_music.current.play();
+            }
             // update player hand
             setHand([...roomData.playerdatalist[0].hand]);
     
@@ -882,7 +889,6 @@ export default function Home() {
   return (
     <div className="">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></link>
-      <audio loop autoPlay><source src='mahjong_music.mp3' type="audio/mpeg"></source></audio>
       <div id='home' className='page' style={{zIndex: '1'}}>
         <ShowBalance 
         balance={balance} 
@@ -935,6 +941,7 @@ export default function Home() {
         </button>
       </div>
       <div id='game' className='page' style={{display: 'none'}}>
+        <audio loop ref={background_music}><source src='mahjong_music.mp3' type="audio/mpeg"></source></audio>
         <Board 
           hand={hand} 
           setHand={setHand}
