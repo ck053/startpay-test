@@ -9,12 +9,13 @@ export async function POST(req: NextRequest) {
 
         // find the room
         const roomdata = roomDatalist[roomId];
-        if (!roomdata) {
-            throw new Error("Room not exits");
+        if (!roomdata || roomdata.userid !== userid) {
+            throw new Error("Room not exits or userid not matching");
         }
         if (!roomdata.listen) {
             throw new Error("Room not listening");
         }
+        roomdata.listen = false;
         const player = roomdata.playerdatalist[0];
         // open kan
         if (roomdata.current_player !== 0) {
@@ -25,11 +26,11 @@ export async function POST(req: NextRequest) {
                 const exposedTile = player.hand.splice(index, 3);
                 exposedTile.push(roomdata.playerdatalist[roomdata.current_player].discard.pop());
                 player.exposed.push(exposedTile);
-                roomdata.listening = true;
+                roomdata.listen = true;
                 roomdata.current_player = 0;
                 const PublicRoomData = FetchRoomData(roomdata);
                 return NextResponse.json({ success:true, roomdata:PublicRoomData });
-        } else {roomdata.listening = true; throw new Error("Pon is not available");} 
+        } else {roomdata.listen = true; throw new Error("Pon is not available");} 
         }
         // closed kan or add kan
         else {
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
                     // remove 4 tile from hand
                     const closed_exposedTile = player.hand.splice(tile_index, 4);
                     player.exposed.push(closed_exposedTile);
-                    roomdata.listening = true;
+                    roomdata.listen = true;
                     const PublicRoomData = FetchRoomData(roomdata);
                     return NextResponse.json({ success:true, roomdata:PublicRoomData });
                 // add kan
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
                             const matchingPonIndex = index;
                             // 3. Add the 4th tile to make it a Kan 
                             player.exposed[matchingPonIndex].push(add_exposedTile);
-                            roomdata.listening = true;
+                            roomdata.listen = true;
                         }
                     });
                     if (!pon_finded)

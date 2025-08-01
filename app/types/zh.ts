@@ -3,7 +3,7 @@ export default {
     play: "开始游戏",
     settings: "设置",
     stars: "下注星星数量：",
-    star_number: "星星数量：",
+    star_number: "代币数量：",
     chi: '吃',
     pon: '碰',
     kan: '杠',
@@ -13,4 +13,8 @@ export default {
     setting: '游戏设置',
     language: '语言:',
     savesetting: '保存',
+    win: "胜利！",
+    gameover: "失敗",
+    home: "返回主页",
+    animation: "动画速度：",
   };

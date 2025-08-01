@@ -1,6 +1,7 @@
 import { MahjongAction } from "@/app/game/components/Board";
 import { NextRequest, NextResponse } from "next/server";
 import { checkWin, checkkan } from "@/app/data/game";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export async function POST(req: NextRequest) {
     try {
@@ -11,13 +12,25 @@ export async function POST(req: NextRequest) {
         
         //find the room
         const roomdata = roomDatalist[roomId];
-        if (!roomdata) {
-            throw new Error("Room not exits");
+        if (!roomdata || roomdata.userid !== userid) {
+            throw new Error("Room not exits or userid not matching");
         }
         const player = roomdata.playerdatalist[0];
         //deal a card to current player
         if (roomdata['wall'].length <= 0) {
             action.push('end');
+            // update roomdata
+            roomdata.finished = true;
+            // update database
+            const client = await connectToDatabase();
+            const db = client.db('mahjong_game');
+            const roomsCollection = db.collection('rooms');
+            await roomsCollection.updateOne(
+                { roomId: roomId },
+                { $set: { ...roomdata } }
+            );
+            // remove roomdata from list
+            delete roomDatalist[roomId];
             return NextResponse.json({action, new_tile: 11})
         }
         if (!roomdata.listen) {

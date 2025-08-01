@@ -9,12 +9,13 @@ export async function POST(req: NextRequest) {
 
         // find the room
         const roomdata = roomDatalist[roomId];
-        if (!roomdata) {
-            throw new Error("Room not exits");
+        if (!roomdata || roomdata.userid !== userid) {
+            throw new Error("Room not exits or userid not matching");
         }
         if (!roomdata.listen) {
             throw new Error("Room not listening");
         }
+        roomdata.listen = false;
         const player = roomdata.playerdatalist[0];
         // check if pon available
         if (checkpon(player.hand, roomdata.last_discard)) {
@@ -23,11 +24,11 @@ export async function POST(req: NextRequest) {
             const exposedTile = player.hand.splice(index, 2);
             exposedTile.push(roomdata.playerdatalist[roomdata.current_player].discard.pop());
             player.exposed.push(exposedTile);
-            roomdata.listening = true;
+            roomdata.listen = true;
             roomdata.current_player = 0;
             const PublicRoomData = FetchRoomData(roomdata);
             return NextResponse.json({ success:true, roomdata:PublicRoomData });
-        } else {roomdata.listening = true; throw new Error("Pon is not available");} 
+        } else {roomdata.listen = true; throw new Error("Pon is not available");} 
     } catch(error) {
         return NextResponse.json({ sucess:false, error: 'Error when trying to pon' }, { status:500 });
     }

@@ -286,7 +286,7 @@ flex: 0 0 auto;
 }
 
 .tile-animate {
-  animation: slideToHand 0.5s ease-out forwards;
+  animation: slideToHand var(--animation-time) ease-out forwards;
 }
 
 .x-box {
@@ -317,55 +317,4 @@ flex: 0 0 auto;
 .x-box:after {
   transform: translate(-50%, -50%) rotate(-45deg);
   transform-origin: center center;
-}
-
-#animation-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  background-color: gray;
-  opacity: 0.5;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  transition: opacity 0.3s ease;
-}
-
-.play {
-  width: 0;
-  height: 0;
-  border-top: 10px solid transparent;
-  border-left: 16px solid white;
-  border-bottom: 10px solid transparent;
-  margin-left: 4px;
-}
-
-.cross {
-  position: relative;
-  width: 20px;
-  height: 20px;
-}
-
-.cross:before, .cross:after {
-  position: absolute;
-  content: '';
-  height: 20px;
-  width: 2px;
-  background-color: white;
-  top: 0;
-  left: 9px;
-}
-
-.cross:before {
-  transform: rotate(45deg);
-}
-
-.cross:after {
-  transform: rotate(-45deg);
 }

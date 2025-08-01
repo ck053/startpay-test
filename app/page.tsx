@@ -19,6 +19,7 @@ import { NextResponse } from 'next/server';
 import { gsap } from 'gsap';
 
 export default function Home() {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   const [initialized, setInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +69,9 @@ export default function Home() {
       stars: 0,
       listen: false,
       round: -1,
-      position: -1
+      position: -1,
+      userid: "",
+      finished: false,
     }
   );
   const resources = {
@@ -84,7 +87,7 @@ export default function Home() {
   const [chi_list, setChi_list] = useState<number[][]>([]);
   const [WinDisplay, setWinDisplay] = useState<boolean>(false);
   const [GameOverDisplay, setGameOverDisplay] = useState<boolean>(false);
-  const [animation, setAnimation] = useState<boolean>(true);
+  const [AnimationSpeed, setAnimationSpeed] = useState<number>(1);
   const [language, setLanguage] = useState<string>('en');
   const centerboard = useRef<HTMLDivElement>(null);
   const playerHandRef = useRef<HTMLDivElement>(null);
@@ -102,6 +105,7 @@ export default function Home() {
   const setting = useRef<HTMLDivElement>(null);
   const selectlanguage = useRef<HTMLSelectElement>(null);
   const starvalue = useRef<HTMLInputElement>(null);
+  const selectspeed = useRef<HTMLSelectElement>(null);
 
   const fetchBalance = async (userid: string) => {
     try {
@@ -127,7 +131,6 @@ export default function Home() {
       try {
         // Dynamic import of the TWA SDK
         const WebApp = (await import('@twa-dev/sdk')).default;
-        console.log(navigator.language);
         const detectLanguage = () => {
           // return "zh";
           const language = WebApp.initDataUnsafe.user?.language_code;
@@ -139,6 +142,7 @@ export default function Home() {
         };
           
         setLanguage(detectLanguage());
+        
         // Check if running within Telegram
         const isTelegram = WebApp.isExpanded !== undefined;
         
@@ -152,7 +156,26 @@ export default function Home() {
             // Access user data directly from the WebApp object
             const user = WebApp.initDataUnsafe.user;
             setUserId(user.id?.toString() || '');
-            await fetchBalance(user.id?.toString());
+            const userid = user.id?.toString()
+            await fetchBalance(userid);
+            // get user setting from database
+            const response = await fetch('/api/get-setting', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ userid }),
+            });
+            if (response.ok) {
+              const { language, animation_speed } = await response.json();
+              if (language && language !== "null")
+              setLanguage(language);
+              if (animation_speed)
+              setAnimationSpeed(animation_speed);
+            }
+            if (window.screen.availWidth < window.screen.availHeight) {
+              setError('Please play with horizonal screen');
+            }
             const userName = user.first_name || '';
             const userLastName = user.last_name || '';
             setUsername(`${userName}${userLastName ? ' ' + userLastName : ''}`);
@@ -224,54 +247,87 @@ export default function Home() {
   });
 
   // Handle start game request
-  const handleStartGame = async (path: string) => {
-    try {
-        const star_to_play = Number(starvalue.current?.value);
-        const response = await fetch('/api/createRoom', {
+  const handleStartGame = async () => {
+    try { 
+        let star_to_play = 0;
+        if (starvalue.current?.value !== '')
+        star_to_play = Number(starvalue.current?.value);
+        if (Number.isNaN(star_to_play)) throw new Error("Invalid star value");
+
+        const payment_response = await fetch ('/api/create-invoice', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+              'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userid, star_to_play })
-        });
+            body: JSON.stringify({ userId: userid, stars: star_to_play })
+        })
 
-        if (!response.ok) {
-            throw new Error('Failed to create room');
+        if (!payment_response.ok) {
+          throw new Error("Failed to create invoice");
         }
-
-        // get roomdata
-        const { roomId, roomData } = await response.json();
-        setRoomId(roomId);
-
-        // show game page
-        await navigateTo(path);
-        
-        // update player hand
-        setHand([...roomData.playerdatalist[0].hand]);
-
-        // ask for first tile
-        const ready = await fetch( '/api/deal', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({userid, roomId}),
+        const { invoiceLink, payload } = await payment_response.json();
+        const WebApp = (await import('@twa-dev/sdk')).default;
+        WebApp.openInvoice(invoiceLink, async (status) => {
+          if (status === 'paid') {
+            // Payment was successful            
+            try {
+              // create room
+              const response = await fetch('/api/createRoom', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userid, star_to_play, payload })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to create room');
+            }
+    
+            // get roomdata
+            const { roomId, roomData } = await response.json();
+            setRoomId(roomId);
+            // show game page
+            await navigateTo('game');
+            // update player hand
+            setHand([...roomData.playerdatalist[0].hand]);
+    
+            // ask for first tile
+            const ready = await fetch( '/api/deal', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({userid, roomId}),
+            });
+    
+            if (!ready.ok) {
+              throw new Error ('Server not ready');
+            }
+    
+            const { action, new_tile } = await ready.json();
+    
+            // update player hand
+            roomData.playerdatalist[0].hand.push(new_tile);
+            setRoomData(roomData);
+            setHand([...roomData.playerdatalist[0].hand]);
+            // handle button
+            setActions(action);
+            } catch (e) {
+              console.error('Error saving payment:', e);
+              alert('Your payment was successful, but we had trouble saving your purchase. Please contact support.');
+              setIsLoading(false); // Ensure loading is turned off after error
+            }
+          } else if (status === 'failed') {
+            alert('Payment failed. Please try again.');
+          } else if (status === 'cancelled') {
+            // User cancelled the payment, no action needed
+            console.log('Payment was cancelled by user');
+          }
         });
-
-        if (!ready.ok) {
-          throw new Error ('Server not ready');
-        }
-
-        const { action, new_tile } = await ready.json();
-
-        // update player hand
-        roomData.playerdatalist[0].hand.push(new_tile);
-        setRoomData(roomData);
-        setHand([...roomData.playerdatalist[0].hand]);
-        // handle button
-        setActions(action);
 
     } catch (error) {
+        setIsLoading(false);
         console.error('Error creating room:', error);
     }
 };
@@ -309,10 +365,11 @@ export default function Home() {
             // hanle start position
             RighttileElement.style.setProperty('--start-x', `${RightstartX}px`);
             RighttileElement.style.setProperty('--start-y', `${RightstartY}px`);
+            RighttileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
             RighttileElement.className = 'tile-animate turned_tile';
             RighttileElement.id = 'HandtoRemove';
             rightHandRef.current?.appendChild(RighttileElement);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
             break;
           case 2:
             if (!oppHandRef.current) return;
@@ -324,10 +381,11 @@ export default function Home() {
             // hanle start position
             OpptileElement.style.setProperty('--start-x', `${OppstartX}px`);
             OpptileElement.style.setProperty('--start-y', `${OppstartY}px`);
+            OpptileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
             OpptileElement.className = 'tile-animate tile';
             OpptileElement.id = 'HandtoRemove';
             oppHandRef.current?.appendChild(OpptileElement);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
             break;
           case 3:
             if (!leftHandRef.current) return;
@@ -339,10 +397,11 @@ export default function Home() {
             // hanle start position
             LefttileElement.style.setProperty('--start-x', `${LeftstartX}px`);
             LefttileElement.style.setProperty('--start-y', `${LeftstartY}px`);
+            LefttileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
             LefttileElement.className = 'tile-animate turned_tile';
             LefttileElement.id = 'HandtoRemove';
             leftHandRef.current?.appendChild(LefttileElement);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
             break;
           }
         } else if (action.action == 'discard') {
@@ -372,10 +431,11 @@ export default function Home() {
               OwntileElement.style.backgroundImage = `url('Regular/${action.value}.png')`;
               OwntileElement.style.setProperty('--start-x', `${OwnstartX}px`);
               OwntileElement.style.setProperty('--start-y', `${OwnstartY}px`);
+              OwntileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
               OwntileElement.className = 'tile-animate discardtile';
               OwntileElement.id = 'HandtoRemove';
               owndiscard.current?.appendChild(OwntileElement);
-              await new Promise(resolve => setTimeout(resolve, 500));
+              await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
               break;
             case 1:
               if (!rightHandRef.current) return;
@@ -388,11 +448,12 @@ export default function Home() {
               RighttileElement.style.backgroundImage = `url('Regular/${action.value+200}.png')`;
               RighttileElement.style.setProperty('--start-x', `${RightstartX}px`);
               RighttileElement.style.setProperty('--start-y', `${RightstartY}px`);
+              RighttileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
               RighttileElement.className = 'tile-animate right_discardtile';
               RighttileElement.id = 'HandtoRemove';
               rightHandRef.current?.querySelector('#HandtoRemove')?.remove();
               rightdiscard.current?.appendChild(RighttileElement);
-              await new Promise(resolve => setTimeout(resolve, 500));
+              await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
               break;
             case 2:
               if (!oppHandRef.current) return;
@@ -405,11 +466,12 @@ export default function Home() {
               OpptileElement.style.backgroundImage = `url('Regular/${action.value+300}.png')`;
               OpptileElement.style.setProperty('--start-x', `${OppstartX}px`);
               OpptileElement.style.setProperty('--start-y', `${OppstartY}px`);
+              OpptileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
               OpptileElement.className = 'tile-animate opp_discardtile';
               OpptileElement.id = 'HandtoRemove';
               oppHandRef.current?.querySelector('#HandtoRemove')?.remove();
               oppdiscard.current?.appendChild(OpptileElement);
-              await new Promise(resolve => setTimeout(resolve, 500));
+              await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
               break;
             case 3:
               if (!leftHandRef.current) return;
@@ -422,11 +484,12 @@ export default function Home() {
               LefttileElement.style.backgroundImage = `url('Regular/${action.value+100}.png')`;
               LefttileElement.style.setProperty('--start-x', `${LeftstartX}px`);
               LefttileElement.style.setProperty('--start-y', `${LeftstartY}px`);
+              LefttileElement.style.setProperty('--animation-time', `${0.5/AnimationSpeed}s`);
               LefttileElement.className = 'tile-animate left_discardtile';
               LefttileElement.id = 'HandtoRemove';
               leftHandRef.current?.querySelector('#HandtoRemove')?.remove();
               leftdiscard.current?.appendChild(LefttileElement);
-              await new Promise(resolve => setTimeout(resolve, 500));
+              await new Promise(resolve => setTimeout(resolve, 500/AnimationSpeed));
               break;
             }
         } else console.warn(`Unknown action: ${action.action}`);
@@ -457,7 +520,7 @@ export default function Home() {
       const { roomdata, action: discard_action, replay} = await response.json()
       if (!skip) replay.unshift({action: 'discard', value: tile, player: 0});
       const hand_played = [...roomdata.playerdatalist[0].hand];
-      if (animation) {await animateAllActions(replay, hand_played, id);}
+      await animateAllActions(replay, hand_played, id);
       if (discard_action.includes('end')) {
         // navigateTo('game_over')
         setGameOverDisplay(true);
@@ -786,20 +849,40 @@ export default function Home() {
       setting.current.style.display = 'flex';
       if (selectlanguage.current)
       selectlanguage.current.value = language;
-      console.log("balance:",balance);
+      if (selectspeed.current)
+      selectspeed.current.value = String(AnimationSpeed);
     }
   }
 
-  const savesetting = () => {
+  const savesetting = async () => {
+    let lang_set = null;
+    let speed_set = null;
     if (setting.current)
     setting.current.style.display = 'none';
-    if (selectlanguage.current)
-    setLanguage(selectlanguage.current.value);
-  }
+    if (selectlanguage.current) {
+      lang_set = selectlanguage.current.value;
+      setLanguage(lang_set);
+    }
+    if (selectspeed.current) {
+      speed_set = Number(selectspeed.current.value);
+      setAnimationSpeed(speed_set);
+    }
+    // update setting
+    if (lang_set && speed_set) {
+    await fetch('/api/save-setting', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userid, lang_set, speed_set }),
+    });
+    }
+  } 
 
   return (
     <div className="">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></link>
+      <audio loop autoPlay><source src='mahjong_music.mp3' type="audio/mpeg"></source></audio>
       <div id='home' className='page' style={{zIndex: '1'}}>
         <ShowBalance 
         balance={balance} 
@@ -822,6 +905,13 @@ export default function Home() {
                 <option value={"zh"}> 中文 </option>
                 <option value={"ja"}> 日本語 </option>
               </select>
+              <label htmlFor='animation_speed'>{ //@ts-ignore
+              resources[language].animation}</label>
+              <select id='animation_speed' name='animation_speed' ref={selectspeed}>
+                <option value={'1'}> x1 </option>
+                <option value={'2'}> x2 </option>
+                <option value={'3'}> x3 </option>
+              </select>
             </div>
             <button id="save-settings" className="save-btn" onClick={() => savesetting()}>{ //@ts-ignore
             resources[language].savesetting}</button>
@@ -837,9 +927,9 @@ export default function Home() {
           <button className="stars-button minus" id="decreaseStars" onClick={() => adjuststars(-1)}>-</button>
           <span className="stars-count" id="starsCount" > {starsCount} ⭐</span>
           <button className="stars-button plus" id="increaseStars" onClick={() => adjuststars(1)}>+</button>*/}
-          <input type='text' className='fancy-textbox' placeholder='1-1000' ref={starvalue}></input>⭐
+          <input type='text' className='fancy-textbox' placeholder='1-500' ref={starvalue}></input>⭐
         </div>
-        <button onClick={() => handleStartGame('game') } className='button'>
+        <button onClick={() => handleStartGame() } className='button'>
           {//@ts-ignore
           resources[language].play}
         </button>
@@ -877,8 +967,6 @@ export default function Home() {
           choosetileRef={choosetileRef}
           kan_list={kan_list}
           chi_list={chi_list}
-          animation={animation}
-          setAnimation={setAnimation}
           //@ts-ignore
           text={resources[language]}
           />
@@ -891,6 +979,8 @@ export default function Home() {
           winpagebody={winpagebody}
           WinDisplay={WinDisplay}
           setWinDisplay={setWinDisplay}
+          //@ts-ignore
+          text={resources[language]}
         />
       </div>
       <div id='gameover' className='page' style={{ display: 'none', zIndex: '0', position: 'relative' }} ref={gameoverpagebody}>
@@ -900,6 +990,8 @@ export default function Home() {
           navigateTo={navigateTo}
           GameOverDisplay={GameOverDisplay}
           setGameOverDisplay={setGameOverDisplay}
+          //@ts-ignore
+          text={resources[language]}
         />
       </div>
     </div>

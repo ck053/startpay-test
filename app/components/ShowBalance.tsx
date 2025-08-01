@@ -13,7 +13,7 @@ export default function ShowBalance({ balance, text }: { balance: number, text:s
         borderRadius: '5px',
         cursor: 'pointer'
       }}>
-        {text} {balance} ⭐
+        {text} {balance} 🪙
       </button>
     </Link>
   );

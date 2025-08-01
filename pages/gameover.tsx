@@ -1,3 +1,4 @@
+import { Translations } from "@/app/types/en";
 import { useEffect, useRef, useState } from "react";
 
 type GameOverProps = {
@@ -5,9 +6,10 @@ type GameOverProps = {
     navigateTo: (path: string) => void;
     GameOverDisplay: boolean;
     setGameOverDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+    text: Translations;
 }
 
-export default function Gameoverpage({ gameoverpagebody, navigateTo, GameOverDisplay, setGameOverDisplay }: GameOverProps) {
+export default function Gameoverpage({ gameoverpagebody, navigateTo, GameOverDisplay, setGameOverDisplay, text }: GameOverProps) {
     const handleHome = () => {
         setGameOverDisplay(false);
         navigateTo('home');
@@ -50,8 +52,8 @@ export default function Gameoverpage({ gameoverpagebody, navigateTo, GameOverDis
 
     return (<div className="gameover-container">
                 <div className="skull">💀</div>
-                <h1 className="gameover_title">Game Over</h1>
-                <button className="btn-restart" onClick={handleHome}>Go Home</button>
+                <h1 className="gameover_title">{text?.gameover || 'Game Over'}</h1>
+                <button className="btn-restart" onClick={handleHome}>{text?.home || "Go Home"}</button>
             </div>
             )
 }

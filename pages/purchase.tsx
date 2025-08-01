@@ -126,7 +126,7 @@ export default function Home() {
       }
       
       const data = await response.json();
-      setPurchases(data.purchases || []);
+      setPurchases(data.purchases);
       fetchBalance(userId);
     } catch (e) {
       console.error('Error fetching purchases:', e);
@@ -136,91 +136,30 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    console.log(purchases)
+;  }, [purchases])
+  
   const handlePurchase = async (item: Item) => {
     try {
       setIsLoading(true); // Show loading indicator when starting purchase
-      // Create invoice link through our API
-      const response = await fetch('/api/create-invoice', {
+      //if (balance < item.price) throw new Error("Not enough coins");
+      const response = await fetch('/api/require-gift', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          itemId: item.id,
-          userId
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create invoice');
-      }
-
-      const { invoiceLink } = await response.json();
-      setIsLoading(false); // Hide loading before opening the invoice UI
-
-      // Import TWA SDK
-      const WebApp = (await import('@twa-dev/sdk')).default;
-      
-      // Open the invoice using Telegram's WebApp SDK
-      WebApp.openInvoice(invoiceLink, async (status) => {
-        if (status === 'paid') {
-          setIsLoading(true); // Show loading during processing after payment
-          // Payment was successful
-          // Generate a mock transaction ID since we don't have access to the real one from Telegram
-          // In a production app, this would be retrieved from your backend after the bot
-          // receives the pre_checkout_query and successful_payment updates
-          const transactionId = `txn_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-          
-          try {
-            // Store the successful payment and get the secret code
-            const paymentResponse = await fetch('/api/payment-success', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                userId,
-                itemId: item.id,
-                transactionId
-              })
-            });
-
-            if (!paymentResponse.ok) {
-              throw new Error('Failed to record payment');
-            }
-
-            const { secret } = await paymentResponse.json();
-            
-            // Show the success modal with secret code
-            setModalState({
-              type: 'purchase',
-              purchase: {
-                item,
-                transactionId,
-                timestamp: Date.now(),
-                secret
-              }
-            });
-            
-            // Refresh purchases list
-            await fetchPurchases();
-          } catch (e) {
-            console.error('Error saving payment:', e);
-            alert('Your payment was successful, but we had trouble saving your purchase. Please contact support.');
-            setIsLoading(false); // Ensure loading is turned off after error
-          }
-        } else if (status === 'failed') {
-          alert('Payment failed. Please try again.');
-        } else if (status === 'cancelled') {
-          // User cancelled the payment, no action needed
-          console.log('Payment was cancelled by user');
-        }
-      });
-    } catch (e) {
-      console.error('Error during purchase:', e);
-      alert(`Failed to process purchase: ${e instanceof Error ? e.message : 'Unknown error'}`);
-      setIsLoading(false); // Ensure loading is turned off after error
+        body: JSON.stringify({ userId, item }),
+      })
+      if (!response.ok) throw new Error("server rejected");
+      fetchBalance(userId);
+      fetchPurchases();
+      setIsLoading(false);
+      //TODO: success update
+    } catch(error) {
+      setIsLoading(false);
+      console.log("Error on sending gift", error)
+      alert(error)
     }
   };
 
@@ -301,7 +240,7 @@ export default function Home() {
       //@ts-ignore
       text={resources[language].star_number}/>
       <BackButton />
-      <h1 className="text-2xl font-bold mb-6 text-center">Digital Store</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Gift Store</h1>
       
       <ItemsList 
         items={ITEMS}

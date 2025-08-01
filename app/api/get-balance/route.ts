@@ -1,62 +1,63 @@
 import { NextResponse, NextRequest } from "next/server";
+import { connectToDatabase, Collection } from "@/lib/mongodb";
 
-// Define types for your user data structure
-type UserData = {
-    [userId: string]: {
-      balance: number;
-      // Add other user properties here as needed
-    };
-  };
-  
-  // Initialize global userdata with proper typing
-  declare global {
-    namespace NodeJS {
-      interface Global {
-        userdata: UserData;
-      }
-    }
-  }
-
-// @ts-ignore
-if (!global.userdata) {
-    // @ts-ignore
-    global.userdata = {};
+// Define TypeScript interface for user data
+interface User {
+  userId: string;
+  balance: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const userId = await req.text();
 
-    // Validate userId is not empty
+    // Validate userId
     if (!userId || typeof userId !== 'string') {
-        console.log('Invalid user ID:', userId);
-        return NextResponse.json(
-            { success: false, error: "Invalid user ID"},
-            { status: 400 }
-        );
+      console.log('Invalid user ID:', userId);
+      return NextResponse.json(
+        { success: false, error: "Invalid user ID" },
+        { status: 400 }
+      );
     }
 
-    // Initialize user data if it doesn't exist
-    // @ts-ignore
-    if (!global.userdata[userId]) {
-        // @ts-ignore
-        global.userdata[userId] = {
-        balance: 0, // Default balance
-      };
-    }
+    // Connect to MongoDB
+    const client = await connectToDatabase();
+    const db = client.db('mahjong_game');
+    const usersCollection = db.collection('users') as Collection<User>;
 
-    // @ts-ignore
-    else if (!global.userdata[userId].balance) {
-      // @ts-ignore
-      global.userdata[userId].balance = 0;
+    // Find or create user
+    const result = await usersCollection.findOneAndUpdate(
+      { userId },
+      {
+        $setOnInsert: {
+          userId,
+          balance: 0,
+          language: 'null',
+          createdAt: new Date()
+        },
+        $set: {
+          updatedAt: new Date()
+        }
+      },
+      {
+        upsert: true,
+        returnDocument: 'after' // Returns the updated document
+      }
+    );
+    if (result)
+    if (result.balance == undefined) {
+      throw new Error("Failed to create/find user");
     }
 
     // Return the user's balance
+    if (result)
     return NextResponse.json({
       success: true,
-      // @ts-ignore
-      balance: global.userdata[userId].balance
+      balance: result.balance
     });
+    throw new Error("No result found");
 
   } catch (error) {
     console.error("Error in user balance endpoint:", error);

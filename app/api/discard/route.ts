@@ -2,6 +2,7 @@ import { checkWin, checkpon, replay_record, checkkan, checkchi, FetchRoomData } 
 import { MahjongAction } from "@/app/game/components/Board";
 import next from "next/dist/types";
 import { NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,8 +15,8 @@ export async function POST(req: NextRequest) {
         //find the room
         const roomdata = roomDatalist[roomId];
         const player = roomdata.playerdatalist[0];
-        if (!roomdata) {
-            throw new Error("Room not exits");
+        if (!roomdata || roomdata.userid !== userid) {
+            throw new Error("Room not exits or userid not matching");
         }
         if (!roomdata.listen) {
             throw new Error("Room not listening");
@@ -50,7 +51,19 @@ export async function POST(req: NextRequest) {
             roomdata.current_player = i;
             if (roomdata.wall.length <= 0) {
                 action.push('end');
+                // update roomdata
+                roomdata.finished = true;
                 const PublicRoomData = FetchRoomData(roomdata);
+                // update database
+                const client = await connectToDatabase();
+                const db = client.db('mahjong_game');
+                const roomsCollection = db.collection('rooms');
+                await roomsCollection.updateOne(
+                    { roomId: roomId },
+                    { $set: { ...roomdata } }
+                );
+                // remove roomdata from list
+                delete roomDatalist[roomId];
                 return NextResponse.json({roomdata: PublicRoomData, action, replay});
             }
             // check if bot win
@@ -63,9 +76,21 @@ export async function POST(req: NextRequest) {
                 replay.push({ action:'draw', value:-1, player:i });
                 // trigger bot win
                 action.push('bot_end');
+                // update roomdata
+                roomdata.finished = true;
                 const PublicRoomData = FetchRoomData(roomdata);
                 replay.push({ action:'bot_win', value:card, player:i });
                 PublicRoomData.playerdatalist[i].hand = bot.hand;
+                // update database
+                const client = await connectToDatabase();
+                const db = client.db('mahjong_game');
+                const roomsCollection = db.collection('rooms');
+                await roomsCollection.updateOne(
+                    { roomId: roomId },
+                    { $set: { ...roomdata } }
+                );
+                // remove roomdata from list
+                delete roomDatalist[roomId];
                 return NextResponse.json({roomdata: PublicRoomData, action, replay});
             } else {
                 const card = roomdata.wall.pop();

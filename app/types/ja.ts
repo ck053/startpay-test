@@ -3,7 +3,7 @@ export default {
     play: "ゲーム開始",
     settings: "設定",
     stars: "賭けるスター数:",
-    star_number: "スター数:",
+    star_number: "トークン所持数:",
     chi: 'チー',
     pon: 'ポン',
     kan: 'カン',
@@ -13,4 +13,8 @@ export default {
     setting: 'ゲーム設定',
     language: '言語:',
     savesetting: '保存',
+    win: "勝利！",
+    gameover: "失敗",
+    home: "戻る",
+    animation: "動画の速度:",
   };

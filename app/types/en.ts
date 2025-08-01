@@ -3,7 +3,7 @@ const en = {
     play: "Play Game",
     settings: "Settings",
     stars: "Stars to bet:",
-    star_number:"Stars:",
+    star_number:"Coins:",
     chi: 'Chi',
     pon: 'Pon',
     kan: 'Kan',
@@ -13,6 +13,10 @@ const en = {
     setting: 'Game Setting',
     language: 'Language:',
     savesetting: 'Save Setting',
+    win: "You Win!",
+    gameover: "Game Over",
+    home: "Go Home",
+    animation: "Animation Speed:",
 };
 
 export type TranslationKeys = keyof typeof en;

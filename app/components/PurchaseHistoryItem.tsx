@@ -32,20 +32,6 @@ export default function PurchaseHistoryItem({
         <p className="text-xs tg-hint">
           ID: {purchase.transactionId.substring(0, 10)}...
         </p>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => onViewSecret(purchase)}
-            className="text-xs tg-link cursor-pointer"
-          >
-            View Code
-          </button>
-          <button
-            onClick={() => onRefund(purchase.transactionId)}
-            className="text-xs text-red-500 hover:text-red-700 transition-colors cursor-pointer"
-          >
-            Refund
-          </button>
-        </div>
       </div>
     </div>
   );

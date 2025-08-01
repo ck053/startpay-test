@@ -1,3 +1,4 @@
+import { Translations } from "@/app/types/en";
 import { useEffect, useRef, useState } from "react";
 
 type WinProps = {
@@ -6,9 +7,10 @@ type WinProps = {
     navigateTo: (path: string) => void;
     WinDisplay: boolean;
     setWinDisplay: React.Dispatch<React.SetStateAction<boolean>>;
+    text: Translations;
 }
 
-export default function Winpage({ winpagebody, balance, navigateTo, WinDisplay, setWinDisplay }: WinProps) {
+export default function Winpage({ winpagebody, balance, navigateTo, WinDisplay, setWinDisplay, text }: WinProps) {
     const [showStar, setShowStar] = useState(false);
     const handleClaimReward = () => {
         setWinDisplay(false);
@@ -51,8 +53,8 @@ export default function Winpage({ winpagebody, balance, navigateTo, WinDisplay, 
 
     return (<div className="winner-container">
                 <div className="trophy">🏆</div>
-                <h1 className="win_title">You Win!</h1>
-                <button className="btn-reward" onClick={handleClaimReward}>Go Home</button>
+                <h1 className="win_title">{text?.win || "You Win!"}</h1>
+                <button className="btn-reward" onClick={handleClaimReward}>{text?.home || "Go Home"}</button>
                 {showStar ? (
                     <div className="star-popup">
                         <div className="rotating-star">⭐</div>

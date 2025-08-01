@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getItemById } from '@/app/data/items';
 import { Purchase } from '@/app/types';
+import { connectToDatabase } from '@/lib/mongodb';
 
 // Simulated storage for purchases - in a real app, this would be a database
 
@@ -23,10 +24,14 @@ export async function GET(req: NextRequest) {
     }
 
     // Filter purchases by userId
-    const userPurchases = purchases.filter((purchase: Purchase) => purchase.userId === userId);
+    const client = await connectToDatabase();
+    const db = client.db('mahjong_game');
+    const giftsCollection = db.collection('gift_history');
+    const userGiftHistory = await giftsCollection.find({ userId }).project({ _id: 0 }).toArray();
+    const userPurchases = userGiftHistory.filter((purchase) => purchase.userId === userId);
     
     // Validate all items in purchases exist (in case item data has changed)
-    const validatedPurchases = userPurchases.filter((purchase: Purchase) => {
+    const validatedPurchases = userPurchases.filter((purchase) => {
       return getItemById(purchase.itemId) !== undefined;
     });
     

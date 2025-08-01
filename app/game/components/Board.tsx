@@ -30,11 +30,9 @@ type BoardProps = {
     hand: number[];
     roomData: roomdata;
     actions: MahjongAction[];
-    animation: boolean;
     setHand: React.Dispatch<React.SetStateAction<number[]>>;
     setRoomData: React.Dispatch<React.SetStateAction<roomdata>>;
     setActions: React.Dispatch<React.SetStateAction<MahjongAction[]>>;
-    setAnimation: React.Dispatch<React.SetStateAction<boolean>>;
     onDiscardTile: (tileValue: number, id: number) => Promise<void>;
     handleAction: (action: MahjongAction) => Promise<void>;
     HandleAction: (value: number, type: string, list: number[]) => Promise<void>;
@@ -56,7 +54,7 @@ type BoardProps = {
 
 export type MahjongAction = 'chi' | 'pon' | 'kan' | 'ron' | 'tsumo' | 'skip' | 'end' | 'bot_end';
 
-export default function Board({ hand, setHand, roomData, setRoomData, onDiscardTile, actions, setActions, handleAction, HandleAction, animation, setAnimation, centerboard, playerHandRef, oppHandRef, leftHandRef, rightHandRef, owndiscard, oppdiscard, leftdiscard, rightdiscard, playerExposedRef, kan_list, chi_list, choosetileRef, text }: BoardProps) {
+export default function Board({ hand, setHand, roomData, setRoomData, onDiscardTile, actions, setActions, handleAction, HandleAction, centerboard, playerHandRef, oppHandRef, leftHandRef, rightHandRef, owndiscard, oppdiscard, leftdiscard, rightdiscard, playerExposedRef, kan_list, chi_list, choosetileRef, text }: BoardProps) {
     // State for player's hand and opponent's hand
     const [playerTiles, setPlayerTiles] = useState<Tile[]>([]);
     const [opponentTiles, setOpponentTiles] = useState<Tile[]>([]);
@@ -73,9 +71,7 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
     const [playerExposedTiles, setPlayerExposedTiles] = useState<ExposedTile[]>([]);
     
     const button_area = useRef<HTMLDivElement>(null);
-    const Xbox = useRef<HTMLDivElement>(null);
-    const play = useRef<HTMLDivElement>(null);
-    const cross = useRef<HTMLDivElement>(null);
+    // const Xbox = useRef<HTMLDivElement>(null);
     const action_text: Record<MahjongAction, string> = {
         'chi': text['chi'],
         'pon': text['pon'],
@@ -291,9 +287,9 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         if (centerboard.current) {
             centerboard.current.style.transform = `translateY(-${up}px)`;
         }
-        if (Xbox.current) {
-            Xbox.current.style.transform = `translateY(-${up}px)`;
-        }
+        //if (Xbox.current) {
+        //    Xbox.current.style.transform = `translateY(-${up}px)`;
+        //}
     };
 
     const Close_Choose = () => {
@@ -339,28 +335,10 @@ export default function Board({ hand, setHand, roomData, setRoomData, onDiscardT
         setKan_listTiles(newTiles);
       };
 
-    const ToggleAnimation = () => {
-        setAnimation(!animation);
-        if (!animation) {
-            if (play.current && cross.current) {
-                play.current.style.display = '';
-                cross.current.style.display = 'none';
-            }
-        } else {
-            if (play.current && cross.current) {
-                play.current.style.display = 'none';
-                cross.current.style.display = '';
-            }
-        }
-    }
-
     return (
         <div className="gameboard">
-            <button id="animation-toggle" title="Toggle Animations" onClick={() => ToggleAnimation()}>
-                <div className="play" ref={play}></div>
-                <div className="cross" ref={cross} style={{ display: 'none' }}></div>
-            </button>
-            <div className="x-box" ref={Xbox}></div>
+            {//<div className="x-box" ref={Xbox}></div>
+            }
             <div className="choosing_tile" ref={choosetileRef}>
                 {kan_listTiles.map((tile) => (
                     <div

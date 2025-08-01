@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeRoomData } from "@/app/data/game";
-import { useImperativeHandle } from "react";
+import { connectToDatabase } from "@/lib/mongodb";
 
 // @ts-ignore
 if (!global.roomDatalist) {
@@ -9,8 +9,23 @@ if (!global.roomDatalist) {
 }
 // @ts-ignore
 const roomDatalist = global.roomDatalist;
-// @ts-ignore
-const userdata = global.userdata;
+
+async function waitForSuccess(
+    collection: any,
+    payload: string,
+    timeoutMs: number = 3000, // 3 seconds max
+    intervalMs: number = 500   // Check every 500ms
+  ): Promise<boolean> {
+    const startTime = Date.now();
+    
+    while (Date.now() - startTime < timeoutMs) {
+      const check = await collection.findOne({ payload });
+      if (check?.status === "Success") return true;
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
+    }
+    
+    return false;
+}
 
 function getNormalRandom(mean = 12, stdDev = 3) {
     // Box-Muller transform to generate normally distributed numbers
@@ -79,48 +94,154 @@ function generateWinningHand(wall: number[]) {
     return win_hand.sort((a, b) => a - b);
 }
 
+function generateLossingHand(wall: number[]): { hand: number[]; updatedWall: number[] } {
+    const hand: number[] = [];
+    const usedNumbers = new Set<number>();
+    const updatedWall = [...wall];
+    let i = 0;
+
+    while (i < updatedWall.length && hand.length < 13) {
+        const tile = updatedWall[i];
+        if (!usedNumbers.has(tile) && 
+            !usedNumbers.has(tile - 1) && 
+            !usedNumbers.has(tile + 1) &&
+            !usedNumbers.has(tile -2) &&
+            !usedNumbers.has(tile + 2)) {
+            hand.push(tile);
+            usedNumbers.add(tile);
+            updatedWall.splice(i, 1);
+        } else {
+            i++;
+        }
+    }
+    hand.sort((a, b) => a - b);
+    return { hand, updatedWall };
+}
+
 // Define the POST method handler
 export async function POST(req: NextRequest) {
-    const { userid, star_to_play } = await req.json();
-    // check if user valid
-    if (!userdata[userid]) {
+    const { userid, star_to_play, payload } = await req.json();
+    try {
+        const client = await connectToDatabase();
+        const db = client.db('mahjong_game');
+        const usersCollection = db.collection('users');
+        const roomsCollection = db.collection('rooms');
+        const user = await usersCollection.findOne({ userId: userid });
+        if (!user) {
+            return NextResponse.json(
+                { success: false, error: "Invalid user ID" },
+                { status: 401 }
+            );
+        }
+        // check payload
+        const paymentCollection = db.collection('payment');
+        const check = await paymentCollection.findOne({ payload: payload });
+        if (!check) {
+            return NextResponse.json(
+                { success: false, error: "Invalid payload" },
+                { status: 402 }
+            );
+        }
+        if (check.userId !== userid) {
+            return NextResponse.json(
+                { success: false, error: "Invalid user" },
+                { status: 403 }
+            );
+        }
+        if (check.stars !== star_to_play) {
+            return NextResponse.json(
+                { success: false, error: "Invalid star value" },
+                { status: 405 }
+            );
+        }
+        // Retry mechanism for status
+        if (check.status !== "Success") {
+            const isSuccess = await waitForSuccess(paymentCollection, payload);
+            if (!isSuccess) return NextResponse.json(
+                { success: false, error: "Payment timeout" },
+                { status: 408 } // 408 = Timeout
+            );
+        }
+        if (check.roomId) {
+            return NextResponse.json(
+                { success: false, error: "Repeated payload" },
+                { status: 407 }
+            );
+        }
+        // Create room data
+        const [roomData, PublicRoomData] = initializeRoomData(star_to_play, userid);
+        const roomId = generateRoomId();
+        // get bot star balance
+        const bot = await usersCollection.findOneAndUpdate({ userId: "Bot" }, { $inc:{ balance: +star_to_play } });
+        if (!bot) { return NextResponse.json(
+            { success: false, error: "Bot data error" },
+            { status: 408 }
+        ); }
+        const star_number = bot.balance;
+        const difficulty = Number(process.env.DIFFICULTY);
+        // increase difficulty if balance is low
+        if (star_number < star_to_play * 2) {
+            const Avg_win_round = getNormalRandom(4-difficulty, 1);
+            roomData.round = Avg_win_round;
+            // give player a worse hand
+            const {hand: player_hand, updatedWall: wall} = generateLossingHand(roomData.wall);
+            roomData.wall = wall;
+            roomData.wall.push(...roomData.playerdatalist[0].hand);
+            roomData.playerdatalist[0].hand = player_hand;
+            PublicRoomData.playerdatalist[0].hand = player_hand;
+        } else if (star_number < 1000) {
+            const Avg_win_round = getNormalRandom(9-difficulty, 2);
+            roomData.round = Avg_win_round;
+        } else if (star_number < 5000) {
+            const Avg_win_round = getNormalRandom(10-difficulty, 3);
+            roomData.round = Avg_win_round;
+        } else {
+            const Avg_win_round = getNormalRandom(11-difficulty, 3);
+            roomData.round = Avg_win_round;
+        }
+        // Generate bot data
+        const randomInt = Math.floor(Math.random() * 3) + 1;
+        roomData.position = randomInt;
+        const win_hand = generateWinningHand(roomData.wall);
+        roomData.wall.push(...roomData.playerdatalist[randomInt].hand);
+        const randomIndex = Math.floor(Math.random() * 14);
+        const [tile] = win_hand.splice(randomIndex, 1);
+        roomData.wall.unshift(tile);
+        roomData.playerdatalist[randomInt].hand = win_hand;
+
+        // Store room in MongoDB
+        await roomsCollection.insertOne({
+            roomId,
+            ...roomData,
+            payload,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        // remove unfinished room
+        const roomKeyToDelete = Object.keys(roomDatalist).find(
+            (key) => roomDatalist[key].userid === userid
+        );
+          
+        if (roomKeyToDelete) {
+            // Delete the room from the dictionary
+            delete roomDatalist[roomKeyToDelete];
+        }
+        // bind payload with roomId
+        await paymentCollection.updateOne(
+            { payload },
+            { $set: { roomId } }
+        );
+        roomDatalist[roomId] = roomData;
+        console.log("Room created! Total room:", Object.keys(roomDatalist).length);
+        return NextResponse.json({ roomId, roomData: PublicRoomData });
+    } catch (error) {
+        console.error('Error creating room:', error);
         return NextResponse.json(
-            { success: false, error: "Invalid user ID"},
-            { status: 400 }
+            { success: false, error: "Internal server error" },
+            { status: 500 }
         );
     }
-    const playerstars = userdata[userid].balance;
-    if (playerstars < star_to_play || star_to_play < 0) {
-        return NextResponse.json(
-            { success: false, error: "Invalid stars"},
-            { status: 400 }
-        );
-    }
-    // Logic to create a room and initialize data
-    const roomId = generateRoomId(); // Function to generate a unique room ID
-    const [roomData, PublicRoomData] = initializeRoomData(star_to_play); // Function to initialize room data
-    // generate bot winning round
-    // TODO: Add winning round setting
-    const Avg_win_round = getNormalRandom(10,3);
-    roomData.round = Avg_win_round;
-    // generate winning bot
-    const randomInt = Math.floor(Math.random() * 3) + 1;
-    roomData.position = randomInt;
-    // generate the winning hand
-    const win_hand = generateWinningHand(roomData.wall);
-    // switch winning hand with bot hand
-    roomData.wall.push(...roomData.playerdatalist[randomInt].hand);
-    const randomIndex = Math.floor(Math.random() * 14);
-    const [tile] = win_hand.splice(randomIndex, 1);
-    roomData.wall.unshift(tile);
-    roomData.playerdatalist[randomInt].hand = win_hand;
-    // Put roomData into roomDatalist
-    console.log(roomData);
-    roomDatalist[roomId] = roomData;
-    // remove stars on start
-    userdata[userid].balance -= star_to_play;
-    // Send the room data back to the client
-    return NextResponse.json({ roomId, roomData: PublicRoomData });
 }
 
 function generateRoomId(): string {
