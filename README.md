@@ -9,7 +9,7 @@ A single-player Mahjong game where you compete against three AI opponents. Play 
 Install the required dependencies:  
 `npm install`
 ## Configuration
-Create a .env file in your project root with the following variables:
+Create a .env file in your project root with the following variables:  
 DIFFICULTY=3       # Game difficulty (1 = Easy, 2 = Medium, 3 = Hard)  
 MONGODB_URI=       # Your MongoDB connection URI  
 BOT_TOKEN=         # Your Telegram Bot token  
