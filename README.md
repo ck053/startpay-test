@@ -4,7 +4,7 @@ A single-player Mahjong game where you compete against three AI opponents. Play 
 ### Prerequisites
 - Node.js
 - MongoDB database
-- Telegram Bot (Create one via BotFather)
+- Telegram Bot ([@BotFather](https://t.me/BotFather))
 ### Dependencies
 Install the required dependencies:
 npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid
