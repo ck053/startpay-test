@@ -2,9 +2,9 @@
 A single-player Mahjong game where you compete against three AI opponents. Play using Telegram Stars and win exciting rewards!
 ## Installation
 ### Prerequisites
-• Node.js
-• MongoDB database
-• Telegram Bot (Create one via BotFather)
+- Node.js
+- MongoDB database
+- Telegram Bot (Create one via BotFather)
 ### Dependencies
 Install the required dependencies:
 npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid
@@ -24,7 +24,7 @@ npm run bot:setup
 Build and start the server:
 npm run start
 ## features
-• 🎮 Single-player Mahjong against AI opponents
-• ⚡ Play using Telegram Stars
-• 🎁 Win rewards and gifts
-• 🏆 Adjustable difficulty levels
+- 🎮 Single-player Mahjong against AI opponents
+- ⚡ Play using Telegram Stars
+- 🎁 Win rewards and gifts
+- 🏆 Adjustable difficulty levels
