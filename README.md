@@ -2,14 +2,14 @@
 A single-player Mahjong game where you compete against three AI opponents. Play using Telegram Stars and win exciting rewards!
 ## Installation
 ### Prerequisites
-- Node.js
-- MongoDB database
+- [Node.js](https://nodejs.org/) (v18+)
+- [MongoDB](https://www.mongodb.com/) (local or cloud)
 - Telegram Bot ([@BotFather](https://t.me/BotFather))
 ### Dependencies
 Install the required dependencies:
-npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid
+`npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid`
 Development Dependencies (Optional):
-npm install --save-dev @types/node @types/react @types/react-dom @types/seedrandom eslint eslint-config-next typescript
+`npm install --save-dev @types/node @types/react @types/react-dom @types/seedrandom eslint eslint-config-next typescript`
 ## Configuration
 Create a .env file in your project root with the following variables:
 DIFFICULTY=3       # Game difficulty (1 = Easy, 2 = Medium, 3 = Hard)  
@@ -19,10 +19,10 @@ NEXT_PUBLIC_APP_URL= # Public URL for the webhook (e.g., your server's domain)
 ## Usage
 ### Setting Up the Bot
 Configure the Telegram bot webhook:
-npm run bot:setup
+`npm run bot:setup`
 ### Running the Application
 Build and start the server:
-npm run start
+`npm run start`
 ## features
 - 🎮 Single-player Mahjong against AI opponents
 - ⚡ Play using Telegram Stars
