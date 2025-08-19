@@ -7,7 +7,7 @@ A single-player Mahjong game where you compete against three AI opponents. Play 
 - Telegram Bot ([@BotFather](https://t.me/BotFather))
 ### Dependencies
 Install the required dependencies:  
-`npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid`
+`npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid`  
 Development Dependencies (Optional):  
 `npm install --save-dev @types/node @types/react @types/react-dom @types/seedrandom eslint eslint-config-next typescript`
 ## Configuration
