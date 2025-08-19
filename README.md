@@ -6,9 +6,9 @@ A single-player Mahjong game where you compete against three AI opponents. Play 
 - [MongoDB](https://www.mongodb.com/) (local or cloud)
 - Telegram Bot ([@BotFather](https://t.me/BotFather))
 ### Dependencies
-Install the required dependencies:
+Install the required dependencies:  
 `npm install @twa-dev/sdk dotenv mongodb next react react-dom seedrandom telegram uuid`
-Development Dependencies (Optional):
+Development Dependencies (Optional):  
 `npm install --save-dev @types/node @types/react @types/react-dom @types/seedrandom eslint eslint-config-next typescript`
 ## Configuration
 Create a .env file in your project root with the following variables:
@@ -18,10 +18,10 @@ BOT_TOKEN=         # Your Telegram Bot token
 NEXT_PUBLIC_APP_URL= # Public URL for the webhook (e.g., your server's domain)
 ## Usage
 ### Setting Up the Bot
-Configure the Telegram bot webhook:
+Configure the Telegram bot webhook:  
 `npm run bot:setup`
 ### Running the Application
-Build and start the server:
+Build and start the server:  
 `npm run start`
 ## features
 - 🎮 Single-player Mahjong against AI opponents
